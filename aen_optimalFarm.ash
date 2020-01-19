@@ -172,8 +172,8 @@ if (!get_property("_aen_optimalRuns").to_boolean()) {
 		while (!max_weight && get_property("_banderRunaways").to_int() >= floor(run_familiar.total_weight()/5)) {
 			if (!brogues.have_equipped() && try_equip(acc1, brogues)) continue;
 			else if (!$item[recovered cufflinks].have_equipped() && try_equip(acc2, $item[recovered cufflinks])) continue;
-			else if (!$item[repaid diaper].have_equipped() && try_equip(pants, $item[repaid diaper])) continue;
 			else if (!$item[Belt of Loathing].have_equipped() && try_equip(acc3, $item[Belt of Loathing])) continue;
+			else if (!$item[repaid diaper].have_equipped() && try_equip(pants, $item[repaid diaper])) continue;
 			else if (!saber.have_equipped() && try_equip(weapon, saber)) continue;
 			else if (!$item[burning paper crane].have_equipped() && try_equip(off, $item[burning paper crane])) continue;
 			else if (!$item[Stephen's lab coat].have_equipped() && try_equip(shirt, $item[Stephen's lab coat])) continue;
@@ -454,7 +454,7 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 	// optimal_stooper();
 
 	foreach it in $items[tiny plastic Naughty Sorceress, tiny plastic Susie , tiny plastic Boris, tiny plastic Jarlsberg, tiny plastic Sneaky Pete] {
-		if (it.have()) print("Congratulations! You obtained " + it.item_amount() + " " + it.to_string() + "!");
+		if (it.have()) print("Congratulations! You obtained " + it.item_amount() + " " + it.to_string() + "!", "green");
 	}
 	
 	while (get_property("_universeCalculated").to_int() < get_property("skillLevel144").to_int()) {

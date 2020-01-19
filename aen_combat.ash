@@ -160,6 +160,12 @@ void main(int rnd, monster mob, string pg) {
 			}
 			if (monster_hp() > 265 && rnd < 30) extract.use();
 			if (crumbs.have() && get_property("_pantsgivingCrumbs").to_int() < 10 && monster_hp() > 265 && rnd < 30) crumbs.use();
+			if (monster_hp() > 265 && rnd < 30 && get_property("_vampyreCloakeFormUses").to_int() < 10 && $item[vampyric cloake].have_equipped()) {
+				int roll = random(3);
+				if (roll == 0) $skill[Become a Wolf].use();
+				else if (roll == 1) $skill[Become a Cloud of Mist].use();
+				else if (roll == 2) $skill[Become a Bat].use();
+			}
 			runaway();
 		}
 		

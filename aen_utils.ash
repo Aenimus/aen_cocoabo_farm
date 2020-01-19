@@ -334,7 +334,7 @@ int to_int(stat s) {
 
 void optimal_consumption() {
 	if (get_campground() contains mayo_clinic) {
-		if (!$item[Mayodiol].have()) buy_until(inebriety_limit() + 2, $item[Mayodiol]);
+		buy_until(inebriety_limit() + 2, $item[Mayodiol]);
 		while (liver_remaining() > 0) {
 			if (get_property("_universeCalculated").to_int() < get_property("skillLevel144").to_int()
 				&& reverse_numberology(0,0) contains 14) {
@@ -400,6 +400,13 @@ void set_choices() {
 	setChoice[1203] = 4; // Midnight in the Civic Center;
 	setChoice[1208] = -1; // Upscale Noon; 9 is quit
 	setChoice[1209] = 1; // Upscale Midnight
+	setChoice[1222] = 0; // The Tunnel of L.O.V.E.
+	setChoice[1223] = 0; // L.O.V. Entrance
+	setChoice[1224] = 0; // L.O.V. Equipment Room
+	setChoice[1225] = 0; // L.O.V. Engine Room
+	setChoice[1226] = 0; // L.O.V. Emergency Room
+	setChoice[1227] = 0; // L.O.V. Elbow Room
+	setChoice[1228] = 0; // L.O.V. Emporium
 	setChoice[1236] = 6; // Space Cave
 	setChoice[1237] = 6; // A Simple Plant
 	setChoice[1238] = 6; // A Complicated Plant
@@ -421,7 +428,7 @@ void set_choices() {
 	setChoice[1254] = 6; // Please Baby Baby Please
 	setChoice[1255] = 1; // Cool Space Rocks
 	setChoice[1256] = 1; // Wide Open Spaces
-	setChoice[1310] = 2; // Granted a Boon
+	setChoice[1310] = 0; // Granted a Boon
 	setChoice[1322] = 2; // The Beginning of the Neverend
 	setChoice[1324] = 5; // It Hasn't Ended, It's Just Paused
 	setChoice[1340] = 1; // Is There A Doctor In The House?
