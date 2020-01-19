@@ -39,7 +39,6 @@ void lov_round(int option) {
 }
 
 boolean lov_run(int eqp, int eff, int gift) {
-	if (!lov_can()) return false;
 	familiar prev = my_familiar();
 	if (eqp == 0) {
 	print(eqp + " is equip before");
@@ -65,7 +64,6 @@ boolean lov_run(int eqp, int eff, int gift) {
 }
 	
 boolean lov_run(item eqp, effect eff, item gift) {
-	if (!lov_can()) return false;
 	if (!(lov_equipment contains eqp)) abort("Can't get " + eqp.to_string() + " from the Tunnel of L.O.V.E.");
 	if (!(lov_effects contains eff)) abort("Can't get " + eff.to_string() + " from the Tunnel of L.O.V.E.");
 	if (!(lov_gifts contains gift)) abort("Can't get " + gift.to_string() + " from the Tunnel of L.O.V.E.");

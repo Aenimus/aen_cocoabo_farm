@@ -15,8 +15,7 @@ boolean nep_free_can() {
 }
 
 boolean nep_free_run() {
-	if (!nep_free_can()) return false;
-	print("Spending a free turn in the Neverending Party.", "green");
+	print("Spending a free turn in the Neverending Party.", "purple");
 	adv1($location[The Neverending Party], -1, "");
 	return true;
 }

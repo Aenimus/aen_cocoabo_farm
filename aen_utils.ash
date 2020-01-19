@@ -2,40 +2,16 @@ script "aen_utils.ash";
 
 import "aen_shortcuts.ash";
 
-void smart_equip(item it) {
-	slot sl = it.to_slot();
-	if (sl != $slot[acc1]) equip(it);
-
-	// We could do something smart here but I don't know what!
-	// For now we'll try to juggle acc3 all the time
-	equip($slot[acc3], it);
-
-	if (!have_equipped(it)) abort("Could not equip " + it.to_string() + " for some reason");
-}
-
-boolean buy_until(int amt, item it, int maxprice) {
-	amt -= item_amount(it);
-	if(amt > 0) {
-		return buy(amt, it, maxprice) < amt;
-	}
-	return true;
-}
-
-boolean buy_until(int amt, item it) {
-	return buy_until(amt, it, 500);
-}
-
-// TODO needs categorisation 
-/*boolean use(item it) {
-	return use(1, it);
-}*/
-
 boolean use(int amt, skill skl) {
 	return(use_skill(amt, skl));
 }
 
 boolean use(skill skl) {
 	return(use_skill(1, skl));
+}
+
+boolean use(familiar fam) {
+	return fam.use_familiar();
 }
 
 boolean have(item it) {
@@ -76,7 +52,28 @@ boolean wield(item it) {
 	return it.equipped_amount() > 0;
 }
 
-// @TODO is this awful?
+void smart_equip(item it) {
+	slot sl = it.to_slot();
+	if (sl != $slot[acc1]) equip(it);
+
+	// We could do something smart here but I don't know what!
+	// For now we'll try to juggle acc3 all the time
+	equip($slot[acc3], it);
+
+	if (!it.equipped()) abort("Could not equip " + it.to_string() + " for some reason");
+}
+
+boolean buy_until(int amt, item it, int maxprice) {
+	amt -= item_amount(it);
+	if(amt > 0) {
+		return buy(amt, it, maxprice) < amt;
+	}
+	return true;
+}
+
+boolean buy_until(int amt, item it) {
+	return buy_until(amt, it, 500);
+}
 
 slot equipped_slot(item it) {
 	if (!it.equipped()) return $slot[none];
@@ -93,81 +90,65 @@ slot equipped_slot(item it) {
 	return it.to_slot();
 }
 
-void juggle_scorpions(int b) {
-	int a = $item[bowl of scorpions].item_amount();
-	int c = b - a;
-	if(a > b) {
-		c = -c;
-		put_closet(c, $item[bowl of scorpions]);
-	} else if(a < b) {
-		take_closet(c, $item[bowl of scorpions]);
-	}
+boolean closet_until(int target, item it) {
+	int current = it.item_amount();
+	if (current == target) return true;
+	int to_move = target - current;
+	if (-to_move < 0) return put_closet(to_move, it);
+	if (to_move > it.closet_amount()) return false;
+	return take_closet(to_move, it);
 }
 
-void juggle_scorpions() {
-	int a = $item[bowl of scorpions].item_amount();
-	int b = get_property("_drunkPygmyBanishes").to_int();
-	int c = b - a;
-	if(a > b) {
-		c = -c;
-		put_closet(c, $item[bowl of scorpions]);
-	} else if(a < b) {
-		take_closet(c, $item[bowl of scorpions]);
-	}
+boolean juggle_scorpions(int target) {
+	return closet_until(target, $item[bowl of scorpions]);
+}
+
+boolean juggle_scorpions() {
+	return closet_until(get_property("_drunkPygmyBanishes").to_int(), $item[bowl of scorpions]);
 }
 
 boolean fetch(item it) {
-	if (!it.have()) {
-		if (it.shop_amount() > 0) return take_shop(1, it);
-		if (!it.avail()) return false;
-		if (it.closet_amount() > 0) return take_closet(1, it);
-		if (it.display_amount() > 0) return take_display(1, it);
-		if (it.storage_amount() > 0) return take_storage(1, it);
-		if (it.equipped()) {
-			slot it_slot = it.equipped_slot();
-			return equip(it_slot, $item[none]);
-		}
+	if (it.have()) return true;
+	if (it.shop_amount() > 0) return take_shop(1, it);
+	if (it.closet_amount() > 0) return take_closet(1, it);
+	if (it.display_amount() > 0) return take_display(1, it);
+	if (it.storage_amount() > 0) return take_storage(1, it);
+	if (it.equipped()) {
+		slot it_slot = it.equipped_slot();
+		return equip(it_slot, $item[none]);
 	}
-	return it.have();
+	print("Could not fetch: " + it.to_string() + ".", "red");
+	return false;
 }
 
 boolean try_equip(slot sl, item it) {
 	if(it.equipped()) {
 		slot where = it.equipped_slot();
-		if(where != sl) {
-			equip(sl, $item[None]);
-		} else {
-			return true;
-		}
+		if(where == sl) return true;
+		equip(sl, $item[None]);
 	} else if(!it.have()) {
-		if (it.shop_amount() > 0) {
-			take_shop(1, it);
-		} else if (!it.avail()) {
+		if (it.shop_amount() > 0) take_shop(1, it);
+		else if (it.closet_amount() > 0) take_closet(1, it);
+		else if (it.display_amount() > 0) take_display(1, it);
+		else if (it.storage_amount() > 0) take_storage(1, it);
+		else {
+			print("You do not have: " + it.to_string() + ".", "red");
 			return false;
-		} else if (it.closet_amount() > 0) {
-			take_closet(1, it);
-		} else if (it.display_amount() > 0) {
-			take_display(1, it);
-		} else if (it.storage_amount() > 0) {
-			take_storage(1, it);
 		}
 	}
 	return equip(sl, it);
 }
 
 boolean try_equip(item it) {
-	if(it.have_equipped()) return true;
+	if(it.equipped()) return true;
 	if(!it.have()) {
-		if (it.shop_amount() > 0) {
-			take_shop(1, it);
-		} else if (!it.avail()) {
+		if (it.shop_amount() > 0) take_shop(1, it);
+		else if (it.closet_amount() > 0) take_closet(1, it);
+		else if (it.display_amount() > 0) take_display(1, it);
+		else if (it.storage_amount() > 0) take_storage(1, it);
+		else {
+			print("You do not have: " + it.to_string() + ".", "red");
 			return false;
-		} else if (it.closet_amount() > 0) {
-			take_closet(1, it);
-		} else if (it.display_amount() > 0) {
-			take_display(1, it);
-		} else if (it.storage_amount() > 0) {
-			take_storage(1, it);
 		}
 	}
 	return it.equip();
@@ -176,32 +157,25 @@ boolean try_equip(item it) {
 boolean try_equip(familiar fam) {
 	if(!fam.have_familiar()) return false;
 	if(my_familiar() == fam) return true;
-	return fam.use_familiar();
+	return fam.use();
 }
 
 boolean try_use(int amt, item it) {
 	if(!it.have()) {
-		if (it.shop_amount() > 0) {
-			take_shop(1, it);
-		}	else if (!it.avail()) {
+		if (it.shop_amount() > 0) take_shop(1, it);
+		else if (it.closet_amount() > 0) take_closet(1, it);
+		else if (it.display_amount() > 0) take_display(1, it);
+		else if (it.storage_amount() > 0) take_storage(1, it);
+		else {
+			print("You do not have: " + it.to_string() + ".", "red");
 			return false;
-		} else if (it.closet_amount() > 0) {
-			take_closet(1, it);
-		} else if (it.display_amount() > 0) {
-			take_display(1, it);
-		} else if (it.storage_amount() > 0) {
-			take_storage(1, it);
 		}
-	} 
+	}
 	return use(amt, it);
 }
 
 boolean try_use(item it) {
 	return try_use(1, it);
-}
-
-boolean use(familiar fam) {
-	return fam.use_familiar();
 }
 
 int total_weight(familiar fam) {
@@ -342,7 +316,7 @@ void optimal_consumption() {
 				continue;
 			}
 			$item[Mayodiol].use();
-			$item[Lucky Surprise Egg].eatsilent();
+			$item[Spooky Surprise Egg].eatsilent();
 		}
 	}
 	if(pantsgiving.avail() && get_property("_pantsgivingFullness").to_int() <= 1) {
@@ -352,7 +326,7 @@ void optimal_consumption() {
 				cli_execute("numberology 14");
 				continue;
 			}
-			$item[Lucky Surprise Egg].eatsilent();
+			$item[Spooky Surprise Egg].eatsilent();
 		}
 	} else {
 		while (stomach_remaining() > 1) {
@@ -361,7 +335,7 @@ void optimal_consumption() {
 				cli_execute("numberology 14");
 				continue;
 			}
-			$item[Lucky Surprise Egg].eatsilent();
+			$item[Spooky Surprise Egg].eatsilent();
 		}
 	}
 }
@@ -373,16 +347,16 @@ void optimal_stooper() {
 		if (get_property("_universeCalculated").to_int() < get_property("skillLevel144").to_int()
 		&& reverse_numberology(0,0) contains 14) cli_execute("numberology 14");
 		use(1, $item[Mayodiol]);
-		eatsilent(1, $item[Lucky Surprise Egg]);
+		eatsilent(1, $item[Spooky Surprise Egg]);
 	}
-	eatsilent(1, $item[Lucky Surprise Egg]);
+	eatsilent(1, $item[Spooky Surprise Egg]);
 }
 
 void drone() {
-	if (have_equipped($item[Crown of Thrones]) && my_enthroned_familiar() != $familiar[Warbear Drone]) {
-		enthrone_familiar($familiar[Warbear Drone]);
-	} else if (have_equipped($item[Buddy Bjorn]) && my_bjorned_familiar() != $familiar[Warbear Drone]) {
-		bjornify_familiar($familiar[Warbear Drone]);
+	if ($item[Crown of Thrones].equipped() && my_enthroned_familiar() != $familiar[Warbear Drone]) {
+		$familiar[Warbear Drone].enthrone_familiar();
+	} else if ($item[Buddy Bjorn].equipped() && my_bjorned_familiar() != $familiar[Warbear Drone]) {
+		$familiar[Warbear Drone].bjornify_familiar();
 	}
 }
 
@@ -397,8 +371,9 @@ void set_choices() {
 	setChoice[781] = 6; // Earthbound and Down
 	setChoice[888] = 4; // Take a Look, it's in a Book! (Rise)
 	setChoice[889] = 5; // Take a Look, it's in a Book! (Fall)
+	setChoice[1202] = 2; // Noon in the Civic Center
 	setChoice[1203] = 4; // Midnight in the Civic Center;
-	setChoice[1208] = -1; // Upscale Noon; 9 is quit
+	setChoice[1208] = 9; // Upscale Noon; 9 is quit
 	setChoice[1209] = 1; // Upscale Midnight
 	setChoice[1222] = 0; // The Tunnel of L.O.V.E.
 	setChoice[1223] = 0; // L.O.V. Entrance
@@ -456,4 +431,11 @@ boolean change_outfit(string outfitName) { // @TODO: Clean up; possibly add fami
 void multi_fight() {
     while(in_multi_fight()) run_combat();
     if(choice_follows_fight()) run_choice(-1);
+}
+
+void closet_stuff() {
+	closet_until(0, $item[bowling ball]);
+	closet_until(0, $item[sand dollar]);
+	closet_until(0, $item[Special Seasoning]);
+	closet_until(0, $item[ten-leaf clover]);
 }

@@ -13,6 +13,7 @@ item vote_sticker = $item[&quot;I Voted!&quot; sticker];
 
 // Familiars
 familiar bander = $familiar[Frumious Bandersnatch];
+familiar comma = $familiar[Comma Chameleon];
 familiar stomp_boots = $familiar[Pair of Stomping Boots];
 
 // Items

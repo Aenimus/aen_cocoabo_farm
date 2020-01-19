@@ -19,9 +19,13 @@ boolean kramco_grind_until(int amt) {
 		int made = kramco_made();
 		int cases = $item[magical sausage casing].item_amount();
 		int total;
+		print(amt);
 		amt = amt - made;
+		print(amt);
 		if (cases > amt) total = amt;
 		else total = cases;
 		cli_execute("make " + total + " magical sausage");
 		return true;
 }
+
+kramco_grind_until(20);

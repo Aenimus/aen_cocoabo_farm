@@ -19,7 +19,6 @@ boolean snojo_free_can() {
 }
 
 boolean snojo_free_run() {
-	if (!snojo_free_can()) return false;
 	int fights = snojo_fights();
 	if (snojo_setting() == "NONE") {
 		print("Setting the control console from NONE to MOXIE.", "green");
