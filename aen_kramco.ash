@@ -27,5 +27,3 @@ boolean kramco_grind_until(int amt) {
 		cli_execute("make " + total + " magical sausage");
 		return true;
 }
-
-kramco_grind_until(20);

@@ -33,11 +33,10 @@ else if ($familiar[Stocking Mimic].have()) optimal_familiar = $familiar[Stocking
 else if ($familiar[Cocoabo].have()) optimal_familiar = $familiar[Cocoabo];
 else abort("You do not have a suitable familiar for this script.");
 
-while (get_property("_brickoEyeSummon").to_int() < 3) $skill[Summon BRICKOs].use();
+while (get_property("_brickoEyeSummons").to_int() < 3) $skill[Summon BRICKOs].use();
 while (get_property("_favorRareSummons").to_int() < 3) $skill[Summon Party Favor].use();
 while (get_property("_taffyYellowSummons").to_int() < 1 && get_property("_taffyRareSummons").to_int() < 3) $skill[Summon Taffy].use();
-
-abort("nanorhino myst, toxo, cupcake-in-a-cup, elven limbos gingerbread, canteen of wine, blob-shaped crimbo cookie, one with everything, Quaatorade, Hide-rox™ cookie, raw potato, Giant Growth, glowing spore pod, witch's bread, bee's knees, brocolate brogurt, bag of grain, ghost beer, Electric Punch, bishop cookie, memory of a cg base pair");
+// Hide-rox™ cookie, raw potato bishop cookie,
 
 if (stomp_boots.have()) run_familiar = stomp_boots;
 else run_familiar = bander; // @TODO Handling if neither
@@ -167,13 +166,11 @@ if (!get_property("_aen_optimalRuns").to_boolean()) {
 	cli_execute("/cast * " + chosen_libram);
 	boolean max_weight = false;
 	while (!max_weight || get_property("_banderRunaways").to_int() < floor(run_familiar.total_weight()/5)) {
-		if (get_property("_pantsgivingCount").to_int() < 50 &&get_property("_pantsgivingCount").to_int() > 4 
+		if (get_property("_pantsgivingCount").to_int() < 50 &&  get_property("_pantsgivingCount").to_int() > 4 
 			&& stomach_remaining() > 0) $item[Spooky Surprise Egg].eatsilent();
 		if (pantsgiving.equipped() && get_property("_pantsgivingCount").to_int() > 49) $item[wooly loincloth].try_equip();
 		if (my_inebriety() > inebriety_limit()) abort("You are overdrunk.");
-		if ($item[ten-leaf clover].have()) use($item[ten-leaf clover].item_amount(), $item[ten-leaf clover]);
-		if ($item[sand dollar].have()) put_closet($item[sand dollar].item_amount(), $item[sand dollar]);
-		if ($item[Special Seasoning].have()) put_closet($item[Special Seasoning].item_amount(), $item[Special Seasoning]);
+		closet_stuff();
 
 		if (cracker.item_amount() < 10) abort("Acquire more divine crackers.");
 		while (!max_weight && get_property("_banderRunaways").to_int() >= floor(run_familiar.total_weight()/5)) {
@@ -197,6 +194,13 @@ if (!get_property("_aen_optimalRuns").to_boolean()) {
 		adv1($location[The Haunted Library], -1, "");
 	}
 	if (get_property("_banderRunaways").to_int() < 113) abort("Use 2 remaining runs."); // Questionable but OK for now
+	//&TODO navel/banishes w/ sniff
+	optimal_consumption();
+	if (!get_property("_workshedItemUsed").to_boolean() && asdon.have() && user_confirm("Change your workshed to the Asdon Martin?")) {
+		$item[Mayodiol].use(); // For later when we eat again
+		asdon.use();
+	}
+
 	set_property("_aen_optimalRuns", "true");
 }
 
@@ -207,7 +211,7 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 	farm_outfit.change_outfit();
 	if ($item[buddy bjorn].have_equipped() && my_bjorned_familiar() != $familiar[misshapen animal skeleton]) $familiar[misshapen animal skeleton].bjornify_familiar();
 	optimal_familiar.use();
-	if (my_session_adv() > 4) abort("We have spent too many adventures. Is something awry?");
+	if (my_session_adv() > 4 && user_confirm("We have spent 5 adventures. Is something awry?")) abort("Ceasing.");
 	if (comma_refresh() && !comma_run("Feather Boa Constrictor")) abort("Something went wrong with changing the Comma Chameleon.");
 	closet_stuff();
 	if (!$effect[Inscrutable Gaze].have()) $skill[Inscrutable Gaze].use();
@@ -381,7 +385,7 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 	if ((get_property("gingerbreadCityAvailable").to_boolean() || get_property("_gingerbreadCityToday").to_boolean())
 		&& get_property("_gingerbreadCityTurns").to_int() < 30) {
 		if (!$item[gingerbread cigarette].have()) abort("Acquire some gingerbread cigarettes.");
-		if (get_property("_gingerbreadCityTurns").to_int() == 19 || get_property("_gingerbreadCityTurns").to_int() == 9) {
+		if (get_property("_gingerbreadCityTurns").to_int() == 19) {
 			adv1($location[Gingerbread Civic Center], -1, "");
 			continue;
 		}
@@ -417,12 +421,6 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 			
 	}
 
-	while (get_property("_universeCalculated").to_int() < get_property("skillLevel144").to_int()) {
-		int check = get_property("_universeCalculated").to_int();
-		cli_execute("numberology 14");
-		if (check == get_property("_universeCalculated").to_int()) break;
-	}
-
 	if (stomach_remaining() > 0) {
 		trav_trous.try_equip();
 		optimal_consumption();
@@ -433,12 +431,6 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 	foreach it in $items[tiny plastic Naughty Sorceress, tiny plastic Susie, tiny plastic Boris, tiny plastic Jarlsberg, tiny plastic Sneaky Pete,
 		tiny plastic Ed the Undying, tiny plastic Lord Spookyraven, tiny plastic Dr. Awkward, tiny plastic protector spectre] {
 		if (it.have()) print("Congratulations! You obtained " + it.item_amount() + " " + it.to_string() + "!", "green");
-	}
-	
-	while (get_property("_universeCalculated").to_int() < get_property("skillLevel144").to_int()) {
-		int check = get_property("_universeCalculated").to_int();
-		cli_execute("numberology 14");
-		if (check == get_property("_universeCalculated").to_int()) abort("Stuck in the numberology loop.");
 	}
 	
 	cli_execute("/whitelist " + roll_clan);

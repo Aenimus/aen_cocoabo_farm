@@ -92,9 +92,10 @@ slot equipped_slot(item it) {
 
 boolean closet_until(int target, item it) {
 	int current = it.item_amount();
+	if (target < 0) target = (current + it.closet_amount());
 	if (current == target) return true;
 	int to_move = target - current;
-	if (-to_move < 0) return put_closet(to_move, it);
+	if (to_move < 0) return put_closet(-to_move, it);
 	if (to_move > it.closet_amount()) return false;
 	return take_closet(to_move, it);
 }
@@ -309,7 +310,7 @@ int to_int(stat s) {
 void optimal_consumption() {
 	if (get_campground() contains mayo_clinic) {
 		buy_until(inebriety_limit() + 2, $item[Mayodiol]);
-		while (liver_remaining() > 0) {
+		while (liver_remaining() > 0 && stomach_remaining() > 0) {
 			if (get_property("_universeCalculated").to_int() < get_property("skillLevel144").to_int()
 				&& reverse_numberology(0,0) contains 14) {
 				cli_execute("numberology 14");
@@ -343,13 +344,13 @@ void optimal_consumption() {
 void optimal_stooper() {
 	if(!$familiar[stooper].have()) abort("Acquire a stooper.");
 	$familiar[stooper].use();
-	while(my_inebriety() < inebriety_limit() + 1) {
+	while (stomach_remaining() > 0 && my_inebriety() < inebriety_limit() + 1) {
 		if (get_property("_universeCalculated").to_int() < get_property("skillLevel144").to_int()
 		&& reverse_numberology(0,0) contains 14) cli_execute("numberology 14");
 		use(1, $item[Mayodiol]);
 		eatsilent(1, $item[Spooky Surprise Egg]);
 	}
-	eatsilent(1, $item[Spooky Surprise Egg]);
+	while (stomach_remaining() > 0) eatsilent(1, $item[Spooky Surprise Egg]);
 }
 
 void drone() {

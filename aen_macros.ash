@@ -15,9 +15,6 @@ script "aen_macros.ash";
 string macro_finish =
 	"pickpocket;" +
 	"while !pastround 10;" +
-		"if hasskill 7291;" +
-			"skill 7291;" +
-		"endif;" +
 		"if hasskill 7297;" +
 			"skill 7297;" +
 		"endif;" +
@@ -54,9 +51,6 @@ string macro_stasis =
 
 string macro_essentials_finish =
 	"pickpocket;" +
-	"if hasskill 7291;" +
-		"skill 7291;" +
-	"endif;" +
 	"if hasskill 7297;" +
 		"skill 7297;" +
 	"endif;" +
@@ -73,9 +67,6 @@ string macro_essentials_finish =
 string macro_essentials =
 	"pickpocket;" +
 	"while !pastround 10;" +
-		"if hasskill 7291;" +
-			"skill 7291;" +
-		"endif;" +
 		"if hasskill 7297;" +
 			"skill 7297;" +
 		"endif;" +

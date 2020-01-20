@@ -34,7 +34,7 @@ int [item] lov_gifts = {
 void lov_round(int option) {
 	run_choice(1);
 	run_combat();
-	visit_url("choice.php");
+	visit_url("choice.php", false);
 	run_choice(option);
 }
 
@@ -54,7 +54,7 @@ boolean lov_run(int eqp, int eff, int gift) {
 	if (eff < 1 || eff > 3) abort("Second (buff) argument out of bounds.");
 	if (gift < 1 || gift > 6) abort("Third (gift) argument out of bounds.");
 	if (gift == 6 && !$familiar[Space Jellyfish].use()) abort("You need a Space Jellyfish to get toast.");
-	visit_url("place.php?whichplace=town_wrong&action=townwrong_tunnel");
+	visit_url("place.php?whichplace=town_wrong&action=townwrong_tunnel", false);
 	run_choice(1);
 	lov_round(eqp);
 	lov_round(eff);
@@ -69,7 +69,7 @@ boolean lov_run(item eqp, effect eff, item gift) {
 	if (!(lov_gifts contains gift)) abort("Can't get " + gift.to_string() + " from the Tunnel of L.O.V.E.");
 	familiar prev = my_familiar();
 	if (gift == $item[toast] && !$familiar[Space Jellyfish].use()) abort("You need a Space Jellyfish to get toast.");
-	visit_url("place.php?whichplace=town_wrong&action=townwrong_tunnel");
+	visit_url("place.php?whichplace=town_wrong&action=townwrong_tunnel", false);
 	run_choice(1);
 	lov_round(lov_equipment[eqp]);
 	lov_round(lov_effects[eff]);
