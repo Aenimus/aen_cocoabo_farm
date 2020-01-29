@@ -41,6 +41,7 @@ skill ode = $skill[The Ode to Booze];
 skill extract = $skill[extract];
 skill slong = $skill[Sing Along];
 skill crumbs = $skill[pocket crumbs];
+skill shower = $skill[Meteor Shower];
 
 // Slots
 slot hat = $slot[hat];

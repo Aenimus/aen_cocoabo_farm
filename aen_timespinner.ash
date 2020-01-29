@@ -42,13 +42,16 @@ boolean timespinner_eat(item food) {
 }
 
 boolean timespinner_fight(monster mob) {
-	if (!timespinner_can()) return false;
-	if (mob.id == 1431 && !bworps.have() & !bworps.fetch()) buy_until(1, bworps, 500);
+	int mins = timespinner_mins_left();
+	if (mob.id == 1431) {
+		if (!bworps.have() & !bworps.fetch()) buy_until(1, bworps, 500);
+		set_property("aen_commaFights", get_property("aen_commaFights").to_int() + 1);
+	}
 	visit_url("inv_use.php?whichitem=9104&pwd=" + my_hash(), true);
 	run_choice(1);
 	visit_url("choice.php?whichchoice=1196&monid=" + mob.id + "&option=1&pwd=" + my_hash(), true);
 	run_combat();
-	return true;
+	return (mins - 3) == timespinner_mins_left();
 }
 
 boolean timespinner_fight(int mob_id) {

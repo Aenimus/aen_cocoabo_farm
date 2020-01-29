@@ -13,7 +13,23 @@ int comma_fights() {
 boolean comma_fights_check() {
 	if (my_familiar() != comma) return false;
 	int fights = comma_fights();
-	return (fights > 39 || fights == 0);
+	return (fights > 38 || fights == 0);
+}
+
+boolean comma_change(string target) {
+	if (my_familiar() != comma) return false;
+	int fights = comma_fights();
+	if (fights > 38) {
+		string comma_fam = get_property("commaFamiliar");
+		familiar target_fam = target.to_familiar();
+		item eqp = target_fam.familiar_equipment();
+		if (!eqp.have()) abort("You have run out of " + eqp + ".");
+		print("Changing the Comma Chameleon into a " + target_fam + ".", "purple");
+		visit_url("/inv_equip.php?pwd=" + my_hash() + "&which=2&action=equip&whichitem=" + eqp.to_int());
+		set_property("aen_commaFights", 0);
+		visit_url("charpane.php");
+	}
+	return get_property("commaFamiliar") == target;
 }
 
 boolean comma_refresh() {

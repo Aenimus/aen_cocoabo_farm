@@ -179,6 +179,11 @@ boolean try_use(item it) {
 	return try_use(1, it);
 }
 
+boolean try_use(skill skl) {
+	if (skl.have()) return skl.use();
+	return false;
+}
+
 int total_weight(familiar fam) {
 	int a = fam.familiar_weight();
 	int b = weight_adjustment();
@@ -309,7 +314,7 @@ int to_int(stat s) {
 
 void optimal_consumption() {
 	if (get_campground() contains mayo_clinic) {
-		buy_until(inebriety_limit() + 2, $item[Mayodiol]);
+		buy_until(inebriety_limit() + 2, $item[Mayodiol], 1000);
 		while (liver_remaining() > 0 && stomach_remaining() > 0) {
 			if (get_property("_universeCalculated").to_int() < get_property("skillLevel144").to_int()
 				&& reverse_numberology(0,0) contains 14) {

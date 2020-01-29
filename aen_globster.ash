@@ -74,5 +74,6 @@ boolean globster_run(int eqp, int option) {
 	run_combat();
 	visit_url("choice.php", false);
 	run_choice(option);
+	visit_url("main.php", false);
 	return fights + 1 == globster_fights();
 }

@@ -16,6 +16,8 @@ buffer get_funky(item [int] funks, item it) {
 void main(int rnd, monster mob, string pg) {
 	if (can_interact() && get_property("_aen_optimalFarm").to_boolean()) {
 		print("Using consult script aen_combat.ash for aen_optimalFarm.ash.", "blue");
+		// if (get_property("lastEncounter") == "drunk pygmy") set_property("aen_commaFights", get_property("aen_commaFights").to_int() + 1);
+		// run_combat() doesn't trigger on insta-win pygmies. This is a back up if in-script method doesn't work.
 		if (my_familiar() == $familiar[Comma Chameleon]) set_property("aen_commaFights", get_property("aen_commaFights").to_int() + 1);
 
 		location loc = my_location();
@@ -125,6 +127,7 @@ void main(int rnd, monster mob, string pg) {
 		
 		if (mob == $monster[gingerbread convict] || mob == $monster[gingerbread finance bro] || mob == $monster[gingerbread gentrifier]
 			|| mob == $monster[gingerbread lawyer] || mob == $monster[gingerbread tech bro]) {
+			if (shower.have()) shower.use();
 			visit_url("fight.php?action=macro&macrotext=" + macro_essentials.url_encode(), true, true);
 			while(monster_hp() > 300 && rnd < 8) {
 				$item[seal tooth].throw_item();
@@ -153,19 +156,28 @@ void main(int rnd, monster mob, string pg) {
 			string pickpocket = visit_url("fight.php?action=steal", true);
 			matcher picks = create_matcher("You acquire an item: <b>tattered scrap of paper</b>", pickpocket);
 			rnd++;
-			while (!picks.find() && monster_hp() > 265 && rnd < 30) {
+			while (!picks.find() && monster_hp() > 305 && rnd < 30) {
 				pickpocket  = throw_items(cracker, cracker);
 				picks = create_matcher("You acquire an item: <b>tattered scrap of paper</b>", pickpocket);
 				rnd++;
 			}
-			if (monster_hp() > 265 && rnd < 30) extract.use();
-			if (crumbs.have() && get_property("_pantsgivingCrumbs").to_int() < 10 && monster_hp() > 265 && rnd < 30) crumbs.use();
-			if (monster_hp() > 265 && rnd < 30 && get_property("_vampyreCloakeFormUses").to_int() < 10 && $item[vampyric cloake].have_equipped()) {
+			if (monster_hp() > 305 && rnd < 30) {
+				extract.use();
+				rnd++;
+			}
+			if (crumbs.have() && get_property("_pantsgivingCrumbs").to_int() < 10 && monster_hp() > 305 && rnd < 30) {
+				crumbs.use();
+				rnd++;
+			}
+			
+			if (monster_hp() > 305 && rnd < 30 && get_property("_vampyreCloakeFormUses").to_int() < 10 && $item[vampyric cloake].have_equipped()) {
 				int roll = random(3);
 				if (roll == 0) $skill[Become a Wolf].use();
 				else if (roll == 1) $skill[Become a Cloud of Mist].use();
 				else if (roll == 2) $skill[Become a Bat].use();
+				rnd++;
 			}
+			if (monster_hp() > 305 && rnd < 3) $item[seal tooth].throw_item();
 			runaway();
 		}
 		
@@ -179,7 +191,7 @@ void main(int rnd, monster mob, string pg) {
 		
 		visit_url("fight.php?action=macro&macrotext=" + macro_finish.url_encode(), true, true);
 		
-		multi_fight();
+		if (my_location() != $location[The Tunnel of L.O.V.E.]) multi_fight();
 
 	} 
 }

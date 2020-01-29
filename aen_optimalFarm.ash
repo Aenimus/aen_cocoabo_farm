@@ -33,14 +33,47 @@ else if ($familiar[Stocking Mimic].have()) optimal_familiar = $familiar[Stocking
 else if ($familiar[Cocoabo].have()) optimal_familiar = $familiar[Cocoabo];
 else abort("You do not have a suitable familiar for this script.");
 
-while (get_property("_brickoEyeSummons").to_int() < 3) $skill[Summon BRICKOs].use();
-while (get_property("_favorRareSummons").to_int() < 3) $skill[Summon Party Favor].use();
-while (get_property("_taffyYellowSummons").to_int() < 1 && get_property("_taffyRareSummons").to_int() < 3) $skill[Summon Taffy].use();
-// Hide-rox™ cookie, raw potato bishop cookie,
-
 if (stomp_boots.have()) run_familiar = stomp_boots;
 else run_familiar = bander; // @TODO Handling if neither
 
+
+// Stocking up on stuff here
+if (!get_property("_aen_optimalStock").to_boolean()) {
+	print("Buying supplies.", "green");
+	if (!trav_trous.try_equip() && my_id() == 2273519) abort("Where are your damn trousers!?");
+	
+	closet_until(-1, bworps);
+	
+	// Copiers
+	buy_until(1, $item[pulled green taffy], 1000);
+	if (!$item[unfinished ice sculpture].avail()) {
+		buy_until(3, $item[snow berries],3000);
+		buy_until(3, $item[ice harvest], 3000);
+		cli_execute("create unfinished ice sculpture");
+	}
+
+	// Misc
+	buy_until(40, $item[Lucky Surprise Egg], 5000);
+	buy_until(40, $item[Spooky Surprise Egg], 5000);
+	buy_until(10, $item[BRICKO eye brick], 3000);
+	buy_until(20, $item[BRICKO brick], 500);
+	buy_until(3, $item[lynyrd snare], 1000);
+	buy_until(40, $item[drum machine], 4000);
+	buy_until(30, $item[gingerbread cigarette], 15000);
+	buy_until(23, $item[bowl of scorpions], 500);
+	buy_until(1, $item[burning newspaper], 9000);
+	buy_until(1, $item[alpine watercolor set], 5000);
+	buy_until(8, $item[4-d camera], 10000);
+	
+	if ($item[Spooky Surprise Egg].item_amount() < 40) {
+		int eggs = $item[Spooky Surprise Egg].item_amount();
+		cli_execute("acquire " + (40 - eggs) + " Spooky Surprise Egg");
+	}
+	
+	cli_execute("create 10 BRICKO ooze");
+	set_property("_aen_optimalStock", "true");
+	print("Checkpoint reached: _aen_optimalStock is true.", "blue");
+}
 if (!get_property("_aen_optimalSetup").to_boolean()) {
 
 	set_property("_aen_optimalFarm", "true");
@@ -49,7 +82,11 @@ if (!get_property("_aen_optimalSetup").to_boolean()) {
 	set_auto_attack(0);
 	// set_property("_aen_optimalTurns", my_adventures());
 
-	if(!vote_sticker.have() && !get_property("voteAlways").to_boolean()) abort("Go get your vote intrinsics, first.");
+	while (get_property("_brickoEyeSummons").to_int() < 3) $skill[Summon BRICKOs].use();
+	while (get_property("_favorRareSummons").to_int() < 3) $skill[Summon Party Favor].use();
+	while (get_property("_taffyYellowSummons").to_int() < 1 && get_property("_taffyRareSummons").to_int() < 3) $skill[Summon Taffy].use();
+
+	if(!vote_sticker.have() && get_property("voteAlways").to_boolean()) abort("Go get your vote intrinsics, first.");
 	
 	if(get_property("horseryAvailable").to_boolean()) {
 		if(get_property("_horsery") != "dark horse") {
@@ -93,6 +130,37 @@ if (!get_property("_aen_optimalSetup").to_boolean()) {
 		cli_execute("mummery meat");
 	}
 	
+	// @TODO Fav. Bird
+	if (get_property("getawayCampsiteUnlocked").to_boolean()) {
+		while (get_property("_campAwaySmileBuffs").to_int() < 3) visit_url("place.php?whichplace=campaway&action=campaway_sky");
+	}
+	if (vip_key.have()) {
+		if (!get_property("_olympicSwimmingPool").to_boolean()) visit_url("clan_viplounge.php?whichfloor=2&preaction=goswimming&subaction=laps&pwd=" + my_hash());
+		while (get_property("_poolGames").to_int() < 3) visit_url("clan_viplounge.php?whichfloor=2&preaction=poolgame&stance=1&pwd=" + my_hash());
+	}
+	if (get_property("timesRested").to_int() < 1 && total_free_rests() > 0) visit_url("campground.php?action=rest");
+	if (!get_property("oscusSodaUsed").to_boolean()) $item[Oscus\'s neverending soda].try_use();
+	if (!get_property("_perfectlyFairCoinUsed").to_boolean()) $item[perfectly fair coin].try_use();
+	if (!get_property("_incredibleSelfEsteemCast").to_boolean()) $skill[Incredible Self-Esteem].try_use();
+	if (!get_property("_bowleggedSwaggerUsed").to_boolean()) $skill[Bow-Legged Swagger].try_use();
+	if (!get_property("_bendHellUsed").to_boolean()) $skill[Bend Hell].try_use();
+	if (!get_property("_steelyEyedSquintUsed").to_boolean()) $skill[Steely-Eyed Squint].try_use();
+	if (!get_property("_glennGoldenDiceUsed").to_boolean()) $item[Glenn\'s golden dice].try_use();
+	if (!get_property("_defectiveTokenUsed").to_boolean()) $item[defective Game Grid token].try_use();
+	if (!get_property("_legendaryBeat").to_boolean()) $item[The Legendary Beat].try_use();
+	if (!get_property("_fishyPipeUsed").to_boolean()) $item[fishy pipe].try_use();
+	if (!get_property("telescopeLookedHigh").to_boolean()) visit_url("campground.php?action=telescopehigh&pwd=" + my_hash());
+	if (!get_property("_ballpit").to_boolean()) visit_url("clan_rumpus.php?preaction=ballpit&pwd=" + my_hash());
+	if (!get_property("friarsBlessingReceived").to_boolean()) visit_url("friars.php?action=buffs&bro=1&pwd=" + my_hash());
+	if (get_campground() contains $item[Witchess Set] && !get_property("_witchessBuff").to_boolean()) {
+		visit_url("campground.php?action=witchess");
+		run_choice(3);
+		run_choice(2);
+		visit_url("main.php");
+	}
+	while (get_campground() contains $item[Source Terminal] && get_property("_sourceTerminalEnhanceUses").to_int() < 3) cli_execute("terminal enhance meat");
+	visit_url("main.php");
+
 	// Asking whether the user has access to a PYEC
 	if (pyec.fetch()) set_property("_aen_havePYEC", "true");
 	else if (!get_property("_aen_havePYEC").to_boolean() && user_confirm("Do you have access to a PYEC?")) set_property("_aen_havePYEC", "true");
@@ -104,9 +172,12 @@ if (!get_property("_aen_optimalSetup").to_boolean()) {
 	}
 	
 	cli_execute("/cast * " + chosen_libram);
-
-	optimal_consumption();
-
+	
+	if (get_property("getawayCampsiteUnlocked").to_boolean()) {
+		while (get_property("timesRested").to_int() < total_free_rests()) visit_url("place.php?whichplace=campaway&action=campaway_tentclick");
+	}
+	
+	if (!get_property("_bagOTricksUsed").to_boolean()) $item[Bag o\' Tricks].try_use();
 	if (!$item[burning paper crane].fetch()) cli_execute("create burning paper crane");
 	if (get_property("_bastilleGames").to_int() < 1) bastille_batallion(3, 1, 3, 0);
 	set_property("_aen_optimalSetup", "true");
@@ -115,44 +186,6 @@ if (!get_property("_aen_optimalSetup").to_boolean()) {
 	// Volcoino
 	volcano_tower(7);
 
-}
-
-// Stocking up on stuff here
-if (!get_property("_aen_optimalStock").to_boolean()) {
-	print("Buying supplies.", "green");
-	if (!trav_trous.try_equip() && my_id() == 2273519) abort("Where are your damn trousers!?");
-	
-	take_closet(bworps.closet_amount(), bworps);
-	
-	// Copiers
-	buy_until(1, $item[pulled green taffy], 1000);
-	if (!$item[unfinished ice sculpture].avail()) {
-		buy_until(3, $item[snow berries],3000);
-		buy_until(3, $item[ice harvest], 3000);
-		cli_execute("create unfinished ice sculpture");
-	}
-
-	// Misc
-	buy_until(40, $item[Lucky Surprise Egg], 5000);
-	buy_until(40, $item[Spooky Surprise Egg], 5000);
-	buy_until(10, $item[BRICKO eye brick], 3000);
-	buy_until(20, $item[BRICKO brick], 500);
-	buy_until(3, $item[lynyrd snare], 1000);
-	buy_until(40, $item[drum machine], 4000);
-	buy_until(30, $item[gingerbread cigarette], 15000);
-	buy_until(23, $item[bowl of scorpions], 500);
-	buy_until(1, $item[burning newspaper], 9000);
-	buy_until(1, $item[alpine watercolor set], 5000);
-	buy_until(8, $item[4-d camera], 10000);
-	
-	if ($item[Spooky Surprise Egg].item_amount() < 40) {
-		int eggs = $item[Spooky Surprise Egg].item_amount();
-		cli_execute("acquire " + (40 - eggs) + " Spooky Surprise Egg");
-	}
-	
-	cli_execute("create 10 BRICKO ooze");
-	set_property("_aen_optimalStock", "true");
-	print("Checkpoint reached: _aen_optimalStock is true.", "blue");
 }
 
 if (!get_property("_aen_optimalRuns").to_boolean()) {
@@ -193,7 +226,7 @@ if (!get_property("_aen_optimalRuns").to_boolean()) {
 		if (get_property("_banderRunaways").to_int() >= floor(run_familiar.total_weight()/5)) continue;
 		adv1($location[The Haunted Library], -1, "");
 	}
-	if (get_property("_banderRunaways").to_int() < 113) abort("Use 2 remaining runs."); // Questionable but OK for now
+	if (get_property("_banderRunaways").to_int() < 114) abort("Use 2 remaining runs."); // Questionable but OK for now
 	//&TODO navel/banishes w/ sniff
 	optimal_consumption();
 	if (!get_property("_workshedItemUsed").to_boolean() && asdon.have() && user_confirm("Change your workshed to the Asdon Martin?")) {
@@ -212,7 +245,8 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 	if ($item[buddy bjorn].have_equipped() && my_bjorned_familiar() != $familiar[misshapen animal skeleton]) $familiar[misshapen animal skeleton].bjornify_familiar();
 	optimal_familiar.use();
 	if (my_session_adv() > 4 && user_confirm("We have spent 5 adventures. Is something awry?")) abort("Ceasing.");
-	if (comma_refresh() && !comma_run("Feather Boa Constrictor")) abort("Something went wrong with changing the Comma Chameleon.");
+	// if (comma_refresh() && !comma_run("Feather Boa Constrictor")) abort("Something went wrong with changing the Comma Chameleon.");
+	if (!comma_change("Feather Boa Constrictor")) abort("Something went wrong with changing the Comma Chameleon.");
 	closet_stuff();
 	if (!$effect[Inscrutable Gaze].have()) $skill[Inscrutable Gaze].use();
 
@@ -255,6 +289,8 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 		witchess_run();
 		cli_execute("terminal educate digitize");
 		cli_execute("terminal educate extract");
+		visit_url("place.php?whichplace=town_wrong&action=townwrong_tunnel", false); // This is to resuscitate Mafia's realisation of "non-trapping choice.php"
+		run_choice(2);
 		continue;
 	}
 
@@ -336,9 +372,11 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 	}
 
 	if (get_property("_drunkPygmyBanishes").to_int() < 10) {
+	print("Using bowl of scorpions #" + get_property("_drunkPygmyBanishes").to_int() + " on the drunk pygmies.", "purple");
 		if (!$item[bowl of scorpions].have()) juggle_scorpions();
 		kramco.try_equip();
 		// Needs an ice house check
+		if (my_familiar() == $familiar[Comma Chameleon]) set_property("aen_commaFights", get_property("aen_commaFights").to_int() + 1);
 		adv1($location[The Hidden Bowling Alley], -1, "");
 		continue;
 	}
@@ -348,6 +386,7 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 		int forces = get_property("_saberForceUses").to_int();
 		if (forces < 5) {
 			if (get_property("_aen_pygmyAbort").to_boolean()) abort("Fewer than 5 forces is not currently supported.");
+			kramco.try_equip();
 			if ((banishes == 10 && forces == 0) || (banishes == 12 && forces == 1) || (banishes == 14 && forces == 2)
 				|| (banishes == 16 && forces == 3) || (banishes == 18 && forces == 4)) {
 				saber.try_equip();
@@ -358,25 +397,32 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 			} else if ((banishes == 10 && forces == 1) || (banishes == 12 && forces == 2) || (banishes == 14 && forces == 3)
 				|| (banishes == 16 && forces == 4)) {
 				juggle_scorpions(2);
+				if (my_familiar() == $familiar[Comma Chameleon]) set_property("aen_commaFights", get_property("aen_commaFights").to_int() + 1);
 				adv1($location[The Hidden Bowling Alley], -1, ""); // First of three
 				continue;
 			} else if ((banishes == 11 && forces == 1) || (banishes == 13 && forces == 2) || (banishes == 15 && forces == 3)
 				|| (banishes == 17 && forces == 4)) {
 				juggle_scorpions(1);
+				if (my_familiar() == $familiar[Comma Chameleon]) set_property("aen_commaFights", get_property("aen_commaFights").to_int() + 1);
 				adv1($location[The Hidden Bowling Alley], -1, ""); // Second of three
 				continue;
 			} else if (banishes == 18 && forces == 5) {
 				juggle_scorpions(3);
+				if (my_familiar() == $familiar[Comma Chameleon]) set_property("aen_commaFights", get_property("aen_commaFights").to_int() + 1);
 				adv1($location[The Hidden Bowling Alley], -1, "");
 				continue;
 			}
 		} else if (banishes < 21) {
 			if (!$item[bowl of scorpions].have()) juggle_scorpions(1);
+			kramco.try_equip();
+			if (my_familiar() == $familiar[Comma Chameleon]) set_property("aen_commaFights", get_property("aen_commaFights").to_int() + 1);
 			adv1($location[The Hidden Bowling Alley], -1, "");
 			continue;
 		}
 	} else if (get_property("_drunkPygmyBanishes").to_int() < 11) {
 		if (!$item[bowl of scorpions].have()) juggle_scorpions(1);
+		kramco.try_equip();
+		if (my_familiar() == $familiar[Comma Chameleon]) set_property("aen_commaFights", get_property("aen_commaFights").to_int() + 1);
 		adv1($location[The Hidden Bowling Alley], -1, "");
 		continue;
 	}
@@ -432,8 +478,19 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 		tiny plastic Ed the Undying, tiny plastic Lord Spookyraven, tiny plastic Dr. Awkward, tiny plastic protector spectre] {
 		if (it.have()) print("Congratulations! You obtained " + it.item_amount() + " " + it.to_string() + "!", "green");
 	}
+	cli_execute("sell * really dense meat stack");
+	
+	foreach it in $items[meat stack, 1952 Mickey Mantle card, massive gemstone, dollar-sign bag, half of a gold tooth, decomposed boot, leather bookmark, huge gold coin] {
+		if (it.have()) autosell(it.item_amount(), it);
+	}
+	
+	foreach it in $items[solid gold jewel, ancient vinyl coin purse, duct tape wallet, old coin purse, old leather wallet, pixel coin, shiny stones, stolen meatpouch,
+		Gathered Meat-Clip] {
+		if (it.have()) use(it.item_amount(), it);
+	}
 	
 	cli_execute("/whitelist " + roll_clan);
 	set_property("_aen_optimalFarm", "false");
+	print("You earned " + my_session_meat() + " total meat this session.", "purple");
 	print("Checkpoint reached: _aen_optimalFarm is false.", "blue");
 }
