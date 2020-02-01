@@ -241,6 +241,7 @@ if (!get_property("_aen_optimalRuns").to_boolean()) {
 	}
 	//banishes w/ sniff
 	while (get_property("_navelRunaways").to_int() < 3 && (navel.avail() || navel.fetch())) {
+		if (my_session_adv() > 0 && user_confirm("We have spent an adventure while free-running. Is something awry?")) abort("Ceasing.");
 		pp_outfit.change_outfit();
 		try_equip(acc1, navel);
 		adv1($location[The Haunted Library], -1, "");
@@ -264,7 +265,9 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 	farm_outfit.change_outfit();
 	if ($item[buddy bjorn].have_equipped() && my_bjorned_familiar() != $familiar[misshapen animal skeleton]) $familiar[misshapen animal skeleton].bjornify_familiar();
 	optimal_familiar.use();
-	if (my_session_adv() > 4 && user_confirm("We have spent 5 adventures. Is something awry?")) abort("Ceasing.");
+	set_property("_aen_advUsed", get_property("_aen_advUsed").to_int() + my_session_adv());
+	set_property("_aen_meatToday", get_property("_aen_meatToday").to_int() + my_session_meat());
+	if (get_property("_aen_advUsed").to_int() > 4 && user_confirm("We have spent 5 adventures. Is something awry?")) abort("Ceasing.");
 	// if (comma_refresh() && !comma_run("Feather Boa Constrictor")) abort("Something went wrong with changing the Comma Chameleon.");
 	if (!comma_change("Feather Boa Constrictor")) abort("Something went wrong with changing the Comma Chameleon.");
 	closet_stuff();
@@ -484,8 +487,8 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 			continue;
 		}
 	}
-	
-	if ($item[Eight Days a Week Pill Keeper].have() && my_session_adv() < 5) {
+
+	if ($item[Eight Days a Week Pill Keeper].have() && get_property("_aen_advUsed").to_int() < 5) {
 		if (!get_property("_freePillKeeperUsed").to_boolean()) {
 			visit_url("main.php?eowkeeper=1", false);
 			visit_url("choice.php?whichchoice=1395&option=7&pwd=" + my_hash(), true);
@@ -541,6 +544,6 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 	
 	cli_execute("/whitelist " + roll_clan);
 	set_property("_aen_optimalFarm", "false");
-	print("You earned " + my_session_meat() + " total meat this session.", "purple");
+	print("You earned " + get_property("_aen_meatToday").to_int() + " total meat this session.", "purple");
 	print("Checkpoint reached: _aen_optimalFarm is false.", "blue");
 }
