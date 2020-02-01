@@ -17,15 +17,16 @@ import "aen_witchess.ash";
 
 familiar optimal_familiar;
 familiar run_familiar;
-string copy_target = "Witchess Knight";
-string camera_monster = "Knob Goblin Embezzler";
-string copy_outfit = "Embezzler"; // What you would wear vs. the above
-string chosen_libram = "Summon Dice";
-string day_clan = "Piglets of Fate";
-string roll_clan = "KirbyLlama's Private Dungeon Clan";
+string chosen_libram = "Summon Dice"; // How you burn MP
+string copy_target = "Witchess Knight"; // Putty/Rain-Doh target
+string camera_monster = "Witchess Knight"; // Photocopy and 4-d camera target
+string emb_outfit = "Embezzler"; // What you would wear vs. Embezzlers
+string day_clan = "Piglets of Fate"; // Should have VIP stuff
+string roll_clan = "KirbyLlama's Private Dungeon Clan"; // For rollover, should be meat trees, clan buffs, etc.
 string farm_outfit = "OptimalFarm"; // Should be max weight with screege
-string ff_outfit = "Free Fights";
-string run_outfit = "Pickpocket"; // Should be max pickpocket chance
+string ff_outfit = "Free Fights"; // Free stuff from combat; e.g., snowglobe, cheeng's, etc.
+string weight_outfit = "Familiar Runaways"; // Should be absolute max weight
+string pp_outfit = "Pickpocket"; // Should be max pickpocket chance
 
 if ($familiar[Comma Chameleon].have()) optimal_familiar = $familiar[Comma Chameleon];
 else if ($familiar[Ninja Pirate Zombie Robot].have()) optimal_familiar = $familiar[Ninja Pirate Zombie Robot];
@@ -145,7 +146,7 @@ if (!get_property("_aen_optimalSetup").to_boolean()) {
 	if (!get_property("_bowleggedSwaggerUsed").to_boolean()) $skill[Bow-Legged Swagger].try_use();
 	if (!get_property("_bendHellUsed").to_boolean()) $skill[Bend Hell].try_use();
 	if (!get_property("_steelyEyedSquintUsed").to_boolean()) $skill[Steely-Eyed Squint].try_use();
-	if (!get_property("_glennGoldenDiceUsed").to_boolean()) $item[Glenn\'s golden dice].try_use();
+	// if (!get_property("_glennGoldenDiceUsed").to_boolean()) $item[Glenn\'s golden dice].try_use(); // There comes a point where this is just yielding passive damage
 	if (!get_property("_defectiveTokenUsed").to_boolean()) $item[defective Game Grid token].try_use();
 	if (!get_property("_legendaryBeat").to_boolean()) $item[The Legendary Beat].try_use();
 	if (!get_property("_fishyPipeUsed").to_boolean()) $item[fishy pipe].try_use();
@@ -180,32 +181,43 @@ if (!get_property("_aen_optimalSetup").to_boolean()) {
 	if (!get_property("_bagOTricksUsed").to_boolean()) $item[Bag o\' Tricks].try_use();
 	if (!$item[burning paper crane].fetch()) cli_execute("create burning paper crane");
 	if (get_property("_bastilleGames").to_int() < 1) bastille_batallion(3, 1, 3, 0);
-	set_property("_aen_optimalSetup", "true");
-	print("Checkpoint reached: _aen_optimalSetup is true.", "blue");
-	
+
 	// Volcoino
 	volcano_tower(7);
-
+	
+	
+	set_property("_aen_optimalSetup", "true");
+	print("Checkpoint reached: _aen_optimalSetup is true.", "blue");
 }
 
 if (!get_property("_aen_optimalRuns").to_boolean()) {
-
+	boolean max_weight = false;
+	int max_runs;
+	
+	if (!get_property("aen_maxRuns").to_boolean()) {
+		weight_outfit.change_outfit();
+		set_property("aen_maxRuns", floor(run_familiar.total_weight()/5));
+	}
+	if (feast.fetch()) max_runs = get_property("aen_maxRuns").to_int() + 2; // This value is saved from the previous day.
+	else max_runs = get_property("aen_maxRuns").to_int();
+	
 	// Free run loop
-	run_outfit.change_outfit();
+	pp_outfit.change_outfit();
 	if (pantsgiving.avail() && !pantsgiving.have_equipped() && get_property("_pantsgivingCount").to_int() < 50) pantsgiving.try_equip();
 	run_familiar.use();
 	drone();
-	if (hookah.avail()) hookah.equip();
+	// if (hookah.avail()) hookah.equip(); // There comes a point where this is just yielding passive damage
 	cli_execute("/cast * " + chosen_libram);
-	boolean max_weight = false;
-	while (!max_weight || get_property("_banderRunaways").to_int() < floor(run_familiar.total_weight()/5)) {
+	while (get_property("_banderRunaways").to_int() < max_runs) {
+	// while (!max_weight || get_property("_banderRunaways").to_int() < floor(run_familiar.total_weight()/5)) {
 		if (get_property("_pantsgivingCount").to_int() < 50 &&  get_property("_pantsgivingCount").to_int() > 4 
 			&& stomach_remaining() > 0) $item[Spooky Surprise Egg].eatsilent();
 		if (pantsgiving.equipped() && get_property("_pantsgivingCount").to_int() > 49) $item[wooly loincloth].try_equip();
 		if (my_inebriety() > inebriety_limit()) abort("You are overdrunk.");
+		if (my_session_adv() > 0 && user_confirm("We have spent an adventure while free-running. Is something awry?")) abort("Ceasing.");
 		closet_stuff();
 
-		if (cracker.item_amount() < 10) abort("Acquire more divine crackers.");
+		// if (cracker.item_amount() < 10) abort("Acquire more divine crackers.");
 		while (!max_weight && get_property("_banderRunaways").to_int() >= floor(run_familiar.total_weight()/5)) {
 			if (!brogues.have_equipped() && try_equip(acc1, brogues)) continue;
 			else if (!$item[recovered cufflinks].have_equipped() && try_equip(acc2, $item[recovered cufflinks])) continue;
@@ -219,16 +231,24 @@ if (!get_property("_aen_optimalRuns").to_boolean()) {
 			else if (!contains_text(get_property("_feastedFamiliars"), run_familiar) && feast.try_use()) continue;
 			else if (!$item[snow suit].have_equipped() && try_equip(fam, $item[snow suit])) continue;
 			max_weight = true;
+			set_property("aen_maxRuns", floor(run_familiar.total_weight()/5));
 		}
 		
 		if (get_property("_reflexHammerUsed").to_int() < 1) try_equip(acc1, doc_bag);
 		else if (doc_bag.have_equipped() && get_property("_reflexHammerUsed").to_int() > 0) try_equip(acc1, $item[mime army infiltration glove]);
-		if (get_property("_banderRunaways").to_int() >= floor(run_familiar.total_weight()/5)) continue;
 		adv1($location[The Haunted Library], -1, "");
+		continue;
 	}
-	if (get_property("_banderRunaways").to_int() < 114) abort("Use 2 remaining runs."); // Questionable but OK for now
-	//&TODO navel/banishes w/ sniff
+	//banishes w/ sniff
+	while (get_property("_navelRunaways").to_int() < 3 && (navel.avail() || navel.fetch())) {
+		pp_outfit.change_outfit();
+		try_equip(acc1, navel);
+		adv1($location[The Haunted Library], -1, "");
+		continue;
+	}
+		
 	optimal_consumption();
+	
 	if (!get_property("_workshedItemUsed").to_boolean() && asdon.have() && user_confirm("Change your workshed to the Asdon Martin?")) {
 		$item[Mayodiol].use(); // For later when we eat again
 		asdon.use();
@@ -257,11 +277,10 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 	}
 
 	if (!get_property("_photocopyUsed").to_boolean()) {
-		if (vip_key.have() && !$item[photocopied monster].have()) faxbot(camera_monster.to_monster(), "CheeseFax");
-	
+		if (vip_key.have() && !$item[photocopied \monster].have()) faxbot(camera_monster.to_monster(), "CheeseFax");
 		if ($item[photocopied monster].have() && get_property("photocopyMonster") == camera_monster) {
-			if (camera_monster == "Knob Goblin Embezzler") {
-				copy_outfit.change_outfit();
+			if (camera_monster == "Knob Goblin Embezzler") { // @TODO handle this for all copiers
+				emb_outfit.change_outfit();
 				$skill[disco leer].use();
 			}
 			$item[photocopied monster].use();
@@ -284,6 +303,20 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 		}
 	}
 	
+	if (!get_property("_cameraUsed").to_boolean()) {
+		if ($item[shaking 4-d camera].have() && get_property("cameraMonster") == camera_monster) {
+			$item[shaking 4-d camera].use();
+			continue;
+		}
+	}
+
+	if (!get_property("_iceSculptureUsed").to_boolean()) {
+		if ($item[ice sculpture].have() && get_property("iceSculptureMonster") == camera_monster) {
+			$item[ice sculpture].use();
+			continue;
+		}
+	}
+	
 	if (witchess_can()) {
 		terminal_duplicate_prepare();
 		witchess_run();
@@ -296,7 +329,7 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 
 	if (get_property("chateauMonster") == "Black Crayon Crimbo Elf" && !get_property("_chateauMonsterFought").to_boolean()
 		&& $familiar[Robortender].try_equip()) {
-		change_outfit(ff_outfit);
+		ff_outfit.change_outfit();
 		visit_url("/place.php?whichplace=chateau&action=chateau_painting", false);
 		run_combat();
 		continue;
@@ -353,7 +386,7 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 	if ($familiar[Machine Elf].have() && get_property("_machineTunnelsAdv").to_int() < 5) {
 		print("Completing Machine Tunnel fights.", "green");
 		$familiar[Machine Elf].use();
-		if (hookah.avail()) hookah.equip();
+		// if (hookah.avail()) hookah.equip();
 		adv1($location[The Deep Machine Tunnels], -1, "");
 		continue;
 	}
@@ -445,15 +478,32 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 		continue;
 	}
 	
-	if (!get_property("_freePillKeeperUsed").to_boolean()) {
+	if(total_turns_played() % 11 == 1 && get_property("_voteFreeFights").to_int() < 3 && total_turns_played() != get_property("lastVoteMonsterTurn").to_int()) {
+		if (try_equip(acc1, $item[&quot;I voted!&quot; sticker])) {
+			adv1($location[The Haunted Kitchen], -1, "");
+			continue;
+		}
+	}
+	
+	if ($item[Eight Days a Week Pill Keeper].have() && my_session_adv() < 5) {
+		if (!get_property("_freePillKeeperUsed").to_boolean()) {
+			visit_url("main.php?eowkeeper=1", false);
+			visit_url("choice.php?whichchoice=1395&option=7&pwd=" + my_hash(), true);
+			$skill[Disco Leer].use();
+			emb_outfit.change_outfit();
+			adv1($location[Cobb\'s Knob Treasury], 0, "");
+			continue;
+		}
+	
 		visit_url("main.php?eowkeeper=1", false);
 		visit_url("choice.php?whichchoice=1395&option=7&pwd=" + my_hash(), true);
 		$skill[Disco Leer].use();
-		copy_outfit.change_outfit();
+		emb_outfit.change_outfit();
 		adv1($location[Cobb\'s Knob Treasury], 0, "");
+		continue;
 	}
 
-	if (!user_confirm("Have you fought 6 time pranks?")) abort("Acquire 6 time pranks.");
+	if (get_property("_aen_timePranks").to_int() < 6) abort("Acquire 6 time pranks.");
 	
 	if (kramco_grind_until(20));
 	

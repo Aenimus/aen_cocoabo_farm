@@ -28,6 +28,7 @@ item asdon = $item[Asdon Martin keyfob];
 item b_box = $item[Rain-Doh black box];
 item feast = $item[moveable feast];
 item mayo_clinic = $item[portable Mayo Clinic];
+item navel = $item[navel ring of navel gazing];
 item sheet = $item[Spooky Putty sheet];
 item terminal = $item[Source Terminal];
 item timespinner = $item[Time-Spinner];

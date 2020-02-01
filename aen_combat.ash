@@ -31,6 +31,8 @@ void main(int rnd, monster mob, string pg) {
 		int digitizes = get_property("_sourceTerminalDigitizeUses").to_int();
 		int digiNo = get_property("_sourceTerminalDigitizeMonsterCount").to_int();
 		
+		if (mob.id == 1965) set_property("_aen_timePranks", get_property("_aen_timePranks").to_int() + 1);
+		
 		if (mob == $monster[Witchess Knight]) {
 			item [int] funks;
 
@@ -40,6 +42,12 @@ void main(int rnd, monster mob, string pg) {
 			if  (spookies + rainies < 6) {
 				if  (spookies < 5) get_funky(funks, $item[Spooky Putty sheet]);
 				if  (rainies < 5) get_funky(funks, $item[Rain-Doh black box]);
+			}
+
+			if (!get_property("_cameraUsed").to_boolean() && !$item[shaking 4-d camera].have()) {
+				get_funky(funks, $item[4-d camera]);
+				get_funky(funks, $item[unfinished ice sculpture]);
+				if  (count(funks) == 1) throw_item(funks[0]);
 			}
 			
 			if ($skill[Duplicate].have_skill()) {
@@ -156,8 +164,8 @@ void main(int rnd, monster mob, string pg) {
 			string pickpocket = visit_url("fight.php?action=steal", true);
 			matcher picks = create_matcher("You acquire an item: <b>tattered scrap of paper</b>", pickpocket);
 			rnd++;
-			while (!picks.find() && monster_hp() > 305 && rnd < 30) {
-				pickpocket  = throw_items(cracker, cracker);
+			while (!picks.find() && monster_hp() > 305 && rnd < 30 && cracker.have()) {
+				pickpocket  = throw_item(cracker);
 				picks = create_matcher("You acquire an item: <b>tattered scrap of paper</b>", pickpocket);
 				rnd++;
 			}
