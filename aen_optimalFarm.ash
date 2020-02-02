@@ -99,6 +99,8 @@ if (!get_property("_aen_optimalSetup").to_boolean()) {
 
 	saber_upgrade();
 	
+	if (!$effect[Thanksgetting].have()) $item[green bean casserole].eat();
+	
 	// Check state of copiers
 	print("Checking that our copiers are primed.", "green");
 	// @TODO Handling for people without
@@ -185,7 +187,7 @@ if (!get_property("_aen_optimalSetup").to_boolean()) {
 	// Volcoino
 	volcano_tower(7);
 	
-	
+	set_property("_aen_costToday", my_session_adv());
 	set_property("_aen_optimalSetup", "true");
 	print("Checkpoint reached: _aen_optimalSetup is true.", "blue");
 }
@@ -194,7 +196,7 @@ if (!get_property("_aen_optimalRuns").to_boolean()) {
 	boolean max_weight = false;
 	int max_runs;
 	
-	if (!get_property("aen_maxRuns").to_boolean()) {
+	if (get_property("aen_maxRuns").to_int() < 1) {
 		weight_outfit.change_outfit();
 		set_property("aen_maxRuns", floor(run_familiar.total_weight()/5));
 	}
@@ -244,6 +246,7 @@ if (!get_property("_aen_optimalRuns").to_boolean()) {
 		if (my_session_adv() > 0 && user_confirm("We have spent an adventure while free-running. Is something awry?")) abort("Ceasing.");
 		pp_outfit.change_outfit();
 		try_equip(acc1, navel);
+		if (!$familiar[Artistic Goth Kid].use()) $familiar[none].use();
 		adv1($location[The Haunted Library], -1, "");
 		continue;
 	}
@@ -265,8 +268,29 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 	farm_outfit.change_outfit();
 	if ($item[buddy bjorn].have_equipped() && my_bjorned_familiar() != $familiar[misshapen animal skeleton]) $familiar[misshapen animal skeleton].bjornify_familiar();
 	optimal_familiar.use();
-	set_property("_aen_advUsed", get_property("_aen_advUsed").to_int() + my_session_adv());
-	set_property("_aen_meatToday", get_property("_aen_meatToday").to_int() + my_session_meat());
+	
+	// Tracking turns spent across sessions
+	if (my_session_adv() > get_property("_aen_sessAdv").to_int()) {
+		set_property("_aen_addAdv", "true");
+	} else if (my_session_adv() == 0) set_property("_aen_sessAdv", 0);
+	
+	if (get_property("_aen_addAdv").to_boolean()) {
+		set_property("_aen_advUsed", get_property("_aen_advUsed").to_int() + (my_session_adv() - get_property("_aen_sessAdv").to_int()));
+		set_property("_aen_sessAdv", my_session_adv());
+		set_property("_aen_addAdv", "false");
+	}
+	
+	// Tracking meat earned across sessions
+	if (my_session_meat() > get_property("_aen_sessMeat").to_int()) {
+		set_property("_aen_addMeat", "true");
+	} else if (my_session_meat() == 0) set_property("_aen_sessMeat", 0);
+	
+	if (get_property("_aen_addMeat").to_boolean()) {
+		set_property("_aen_meatToday", get_property("_aen_meatToday").to_int() + (my_session_meat() - get_property("_aen_sessMeat").to_int()));
+		set_property("_aen_sessMeat", my_session_meat());
+		set_property("_aen_addMeat", "false");
+	}
+
 	if (get_property("_aen_advUsed").to_int() > 4 && user_confirm("We have spent 5 adventures. Is something awry?")) abort("Ceasing.");
 	// if (comma_refresh() && !comma_run("Feather Boa Constrictor")) abort("Something went wrong with changing the Comma Chameleon.");
 	if (!comma_change("Feather Boa Constrictor")) abort("Something went wrong with changing the Comma Chameleon.");
@@ -531,7 +555,6 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 		tiny plastic Ed the Undying, tiny plastic Lord Spookyraven, tiny plastic Dr. Awkward, tiny plastic protector spectre] {
 		if (it.have()) print("Congratulations! You obtained " + it.item_amount() + " " + it.to_string() + "!", "green");
 	}
-	cli_execute("sell * really dense meat stack");
 	
 	foreach it in $items[meat stack, 1952 Mickey Mantle card, massive gemstone, dollar-sign bag, half of a gold tooth, decomposed boot, leather bookmark, huge gold coin] {
 		if (it.have()) autosell(it.item_amount(), it);
@@ -544,6 +567,11 @@ while (get_property("_aen_optimalFarm").to_boolean() && my_inebriety() < inebrie
 	
 	cli_execute("/whitelist " + roll_clan);
 	set_property("_aen_optimalFarm", "false");
-	print("You earned " + get_property("_aen_meatToday").to_int() + " total meat this session.", "purple");
+	int meat_today = get_property("_aen_meatToday").to_int();
+	int total_meat_today = get_property("_aen_meatToday").to_int() - get_property("_aen_costToday").to_int();
+	int fights_today = get_property("_aen_fightsToday").to_int();
+		
+	print("You earned " + meat_today + " net meat this session.", "purple");
+	print("That calculates to " + total_meat_today/fights_today + " meat per fight on average.", "purple");
 	print("Checkpoint reached: _aen_optimalFarm is false.", "blue");
 }

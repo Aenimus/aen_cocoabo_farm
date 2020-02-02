@@ -18,7 +18,10 @@ void main(int rnd, monster mob, string pg) {
 		print("Using consult script aen_combat.ash for aen_optimalFarm.ash.", "blue");
 		// if (get_property("lastEncounter") == "drunk pygmy") set_property("aen_commaFights", get_property("aen_commaFights").to_int() + 1);
 		// run_combat() doesn't trigger on insta-win pygmies. This is a back up if in-script method doesn't work.
-		if (my_familiar() == $familiar[Comma Chameleon]) set_property("aen_commaFights", get_property("aen_commaFights").to_int() + 1);
+		if (my_familiar() == $familiar[Comma Chameleon]) {
+			set_property("aen_commaFights", get_property("aen_commaFights").to_int() + 1);
+			set_property("_aen_fightsToday", get_property("_aen_fightsToday").to_int() + 1);
+		}
 
 		location loc = my_location();
 		string foe = mob.to_string();
@@ -160,7 +163,7 @@ void main(int rnd, monster mob, string pg) {
 			if ($skill[Snokebomb].have()) $skill[Snokebomb].use();
 		}
 
-		if (mob == $monster[bookbat] && (my_familiar() == stomp_boots || (my_familiar() == bander && $effect[Ode to Booze].have()))) {
+		if (mob == $monster[bookbat] && (navel.have_equipped() || (my_familiar() == stomp_boots || (my_familiar() == bander && $effect[Ode to Booze].have())))) {
 			string pickpocket = visit_url("fight.php?action=steal", true);
 			matcher picks = create_matcher("You acquire an item: <b>tattered scrap of paper</b>", pickpocket);
 			rnd++;
