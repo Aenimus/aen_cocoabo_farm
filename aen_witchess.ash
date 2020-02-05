@@ -1,7 +1,5 @@
 script "aen_witchess.ash";
 
-import "aen_utils.ash";
-
 boolean witchess_have() {
 	return get_campground() contains $item[Witchess Set];
 }
@@ -20,12 +18,12 @@ boolean witchess_check_piece(monster mob) {
 	return pieces contains mob;
 }
 
-boolean witchess_can() {
+boolean witchess_fight_can() {
 	return witchess_have() && witchess_fights() < 5;
 }
 
-boolean witchess_run(monster piece) {
-	if (!witchess_can()) return false;
+boolean witchess_fight_run(monster piece) {
+	if (!witchess_fight_can()) return false;
 	int fights = witchess_fights();
 	if (!witchess_check_piece(piece)) abort("Cannot fight " + piece.to_string() + " using the Witchess Set.");
 	print("Preparing to fight a " + piece.to_string() + ".");
@@ -36,8 +34,8 @@ boolean witchess_run(monster piece) {
 	return fights + 1 == witchess_fights();
 }
 
-boolean witchess_run(int piece) {
-	if (!witchess_can()) return false;
+boolean witchess_fight_run(int piece) {
+	if (!witchess_fight_can()) return false;
 	int fights = witchess_fights();
 	monster mob = piece.to_monster();
 	if (!witchess_check_piece(mob)) abort("Cannot fight " + mob.to_string() + " using the Witchess Set.");
@@ -49,7 +47,7 @@ boolean witchess_run(int piece) {
 	return fights + 1 == witchess_fights();
 }
 
-boolean witchess_run() {
-	return witchess_run(1936);
+boolean witchess_fight_run() {
+	return witchess_fight_run(1936);
 }
 	

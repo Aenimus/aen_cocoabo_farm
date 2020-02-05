@@ -1,8 +1,5 @@
 script "aen_terminal.ash";
 
-import "aen_utils.ash";
-
-
 skill terminal_digitize = $skill[Digitize];
 
 boolean terminal_have() {

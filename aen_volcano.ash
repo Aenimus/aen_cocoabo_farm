@@ -1,7 +1,5 @@
 script "aen_volcano.ash";
 
-import "aen_utils.ash";
-
 boolean volcano_have() {
 	return get_property("hotAirportAlways").to_boolean() || get_property("_hotAirportToday").to_boolean();
 }

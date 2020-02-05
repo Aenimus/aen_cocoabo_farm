@@ -1,7 +1,5 @@
 script "aen_comma.ash";
 
-import "aen_utils.ash";
-
 boolean comma_have() {
 	return comma.have();
 }
@@ -14,6 +12,10 @@ boolean comma_fights_check() {
 	if (my_familiar() != comma) return false;
 	int fights = comma_fights();
 	return (fights > 38 || fights == 0);
+}
+
+void comma_fights_increment() {
+	if (my_familiar() == comma) set_property("aen_commaFights", comma_fights() + 1);
 }
 
 boolean comma_change(string target) {

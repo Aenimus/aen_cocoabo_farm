@@ -1,7 +1,5 @@
 script "aen_globster.ash";
 
-import "aen_utils.ash";
-
 boolean globster_have() {
 	return $familiar[God Lobster].have();
 }

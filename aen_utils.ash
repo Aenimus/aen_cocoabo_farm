@@ -2,6 +2,17 @@ script "aen_utils.ash";
 
 import "aen_shortcuts.ash";
 
+buffer get_funky(item [int] funks, item it) {
+	buffer b;
+	if  (item_amount(it) == 0) return b;
+	funks[count(funks)] = it;
+	if  (count(funks) == 2) {
+		b = throw_items(funks[0], funks[1]);
+		clear(funks);
+	}
+	return b;
+}
+
 boolean use(int amt, skill skl) {
 	return(use_skill(amt, skl));
 }
@@ -92,8 +103,8 @@ slot equipped_slot(item it) {
 
 boolean closet_until(int target, item it) {
 	int current = it.item_amount();
-	if (target < 0) target = (current + it.closet_amount());
 	if (current == target) return true;
+	if (target < 0) target = (current + it.closet_amount());
 	int to_move = target - current;
 	if (to_move < 0) return put_closet(-to_move, it);
 	if (to_move > it.closet_amount()) return false;
@@ -379,7 +390,7 @@ void set_choices() {
 	setChoice[889] = 5; // Take a Look, it's in a Book! (Fall)
 	setChoice[1202] = 2; // Noon in the Civic Center
 	setChoice[1203] = 4; // Midnight in the Civic Center;
-	setChoice[1208] = 9; // Upscale Noon; 9 is quit
+	setChoice[1208] = 1; // Upscale Noon; 9 is quit; 1 is dog treat
 	setChoice[1209] = 1; // Upscale Midnight
 	setChoice[1222] = 0; // The Tunnel of L.O.V.E.
 	setChoice[1223] = 0; // L.O.V. Entrance

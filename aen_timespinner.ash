@@ -1,7 +1,5 @@
 script "aen_timespinner.ash";
 
-import "aen_utils.ash";
-
 boolean timespinner_have() {
 	return timespinner.fetch();
 }
@@ -35,7 +33,7 @@ boolean timespinner_can_eat(item food) {
 }
 
 boolean timespinner_eat(item food) {
-	if (!timespinner_can_eat(food)) return false;
+	if (!food.timespinner_can_eat()) return false;
 	if (food.fullness == 0) abort("Cannot timespin " + food.to_string() + ".");
 	cli_execute("timespinner eat " + food.to_string());
 	return true;

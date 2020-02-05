@@ -1,24 +1,24 @@
 script "aen_nep.ash";
 
-import "aen_utils.ash";
-
 boolean nep_have() {
 	return get_property("neverendingPartyAlways").to_boolean() || get_property("_neverendingPartyToday").to_boolean();
 }
 
-int nep_fights() {
+int nep_free_turns() {
 	return get_property("_neverendingPartyFreeTurns").to_int();
 }
 
-boolean nep_free_can() {
-	return nep_have() && nep_fights() < 10;
+boolean nep_free_turn_can() {
+	return nep_have() && nep_free_turns() < 10;
 }
 
-boolean nep_free_run() {
+boolean nep_free_turn_run() {
 	print("Spending a free turn in the Neverending Party.", "purple");
+	if (kramco.try_equip()) print("Wearing the Kramco grinder in a goblin friendly zone.", "purple");
 	adv1($location[The Neverending Party], -1, "");
 	return true;
 }
+
 /*
 string nep_status() {
 	return get_property("_questPartyFair");

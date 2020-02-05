@@ -17,12 +17,12 @@ familiar comma = $familiar[Comma Chameleon];
 familiar stomp_boots = $familiar[Pair of Stomping Boots];
 
 // Items
-item pyec = $item[Platinum Yendorian Express Card];
-item tatter = $item[tattered scrap of paper];
-item cracker = $item[divine cracker];
 item bworps = $item[bowl of scorpions];
+item cracker = $item[divine cracker];
 item enamorang = $item[LOV enamorang];
-
+item pyec = $item[Platinum Yendorian Express Card];
+item sgeea = $item[soft green echo eyedrop antidote];
+item tatter = $item[tattered scrap of paper];
 // IotMs
 item asdon = $item[Asdon Martin keyfob];
 item b_box = $item[Rain-Doh black box];
@@ -57,7 +57,6 @@ slot acc3 = $slot[acc3];
 slot fam = $slot[familiar];
 
 // Stats
-
 stat mus = $stat[muscle];
 stat mys = $stat[mysticality];
 stat mox = $stat[moxie];

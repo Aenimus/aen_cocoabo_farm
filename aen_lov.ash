@@ -1,7 +1,5 @@
 script "aen_love.ash";
 
-import "aen_utils.ash";
-
 boolean lov_have() {
 	return get_property("loveTunnelAvailable").to_boolean();
 }

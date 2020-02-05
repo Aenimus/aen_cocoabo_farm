@@ -1,17 +1,7 @@
 script "aen_combat.ash";
+
 import "aen_utils.ash";
 import "aen_macros.ash";
-
-buffer get_funky(item [int] funks, item it) {
-	buffer b;
-	if  (item_amount(it) == 0) return b;
-	funks[count(funks)] = it;
-	if  (count(funks) == 2) {
-		b = throw_items(funks[0], funks[1]);
-		clear(funks);
-	}
-	return b;
-}
 
 void main(int rnd, monster mob, string pg) {
 	if (can_interact() && get_property("_aen_optimalFarm").to_boolean()) {
@@ -80,7 +70,7 @@ void main(int rnd, monster mob, string pg) {
 				rnd++;
 			} */ // removed because pill keeper is just cheaper.
 			
-			while(monster_hp() > 300 && rnd < 10) {
+			while(monster_hp() > 310 && rnd < 10) {
 				if (!extracted) {
 					extract.use();
 					extracted = true;
@@ -101,7 +91,7 @@ void main(int rnd, monster mob, string pg) {
 		
 		if (mob == $monster[giant sandworm]) {
 			visit_url("fight.php?action=macro&macrotext=" + macro_essentials.url_encode(), true, true);
-			while(monster_hp() > 300 && rnd < 8) {
+			while(monster_hp() > 310 && rnd < 8) {
 				$item[seal tooth].throw_item();
 				rnd++;
 			}
@@ -119,12 +109,18 @@ void main(int rnd, monster mob, string pg) {
 
 		if (mob == $monster[pygmy orderlies]) {
 			visit_url("fight.php?action=macro&macrotext=" + macro_essentials.url_encode(), true, true);
-			abort();
+			if ($skill[reflex hammer].have()) $skill[reflex hammer].use();
+			else abort("Banish the pygmy orderlies, somehow.");
+		}
+		
+		if (mob == $monster[pygmy janitor]) {
+			visit_url("fight.php?action=macro&macrotext=" + macro_essentials.url_encode(), true, true);
+			abort("Banish the janitors in the park.");
 		}
 		
 		if (mob == $monster[drunk pygmy] && get_property("_drunkPygmyBanishes").to_int() > 9) {
 			visit_url("fight.php?action=macro&macrotext=" + macro_essentials.url_encode(), true, true);
-			while(monster_hp() > 300 && rnd < 8) {
+			while(monster_hp() > 310 && rnd < 8) {
 				$item[seal tooth].throw_item();
 				rnd++;
 			}
@@ -140,7 +136,7 @@ void main(int rnd, monster mob, string pg) {
 			|| mob == $monster[gingerbread lawyer] || mob == $monster[gingerbread tech bro]) {
 			if (shower.have()) shower.use();
 			visit_url("fight.php?action=macro&macrotext=" + macro_essentials.url_encode(), true, true);
-			while(monster_hp() > 300 && rnd < 8) {
+			while(monster_hp() > 310 && rnd < 8) {
 				$item[seal tooth].throw_item();
 				rnd++;
 			}
@@ -167,28 +163,26 @@ void main(int rnd, monster mob, string pg) {
 			string pickpocket = visit_url("fight.php?action=steal", true);
 			matcher picks = create_matcher("You acquire an item: <b>tattered scrap of paper</b>", pickpocket);
 			rnd++;
-			while (!picks.find() && monster_hp() > 305 && rnd < 30 && cracker.have()) {
+			while (!picks.find() && monster_hp() > 310 && rnd < 30 && cracker.have()) {
 				pickpocket  = throw_item(cracker);
 				picks = create_matcher("You acquire an item: <b>tattered scrap of paper</b>", pickpocket);
 				rnd++;
 			}
-			if (monster_hp() > 305 && rnd < 30) {
+			if (monster_hp() > 310 && rnd < 30) {
 				extract.use();
 				rnd++;
 			}
-			if (crumbs.have() && get_property("_pantsgivingCrumbs").to_int() < 10 && monster_hp() > 305 && rnd < 30) {
+			if (crumbs.have() && get_property("_pantsgivingCrumbs").to_int() < 10 && monster_hp() > 310 && rnd < 30) {
 				crumbs.use();
 				rnd++;
 			}
 			
-			if (monster_hp() > 305 && rnd < 30 && get_property("_vampyreCloakeFormUses").to_int() < 10 && $item[vampyric cloake].have_equipped()) {
-				int roll = random(3);
-				if (roll == 0) $skill[Become a Wolf].use();
-				else if (roll == 1) $skill[Become a Cloud of Mist].use();
-				else if (roll == 2) $skill[Become a Bat].use();
+			if (monster_hp() > 310 && rnd < 30 && get_property("_vampyreCloakeFormUses").to_int() < 10 && $item[vampyric cloake].have_equipped()) {
+				$skill[Become a Wolf].use();
 				rnd++;
 			}
-			if (monster_hp() > 305 && rnd < 3) $item[seal tooth].throw_item();
+			if (monster_hp() > 310 && rnd < 3) $item[seal tooth].throw_item();
+			if (navel.have_equipped() && (my_familiar() == stomp_boots || (my_familiar() == bander && $effect[Ode to Booze].have()))) abort("Check two simultaneous runaways methods.");
 			runaway();
 		}
 		

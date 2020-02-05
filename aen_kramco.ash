@@ -1,7 +1,5 @@
 script "aen_kramco.ash";
 
-import "aen_utils.ash";
-
 boolean kramco_have() {
 	return kramco.avail();
 }
