@@ -390,7 +390,8 @@ void set_choices() {
 	setChoice[889] = 5; // Take a Look, it's in a Book! (Fall)
 	setChoice[1202] = 2; // Noon in the Civic Center
 	setChoice[1203] = 4; // Midnight in the Civic Center;
-	setChoice[1208] = 1; // Upscale Noon; 9 is quit; 1 is dog treat
+	if ($item[sprinkles].item_amount() > 49) setChoice[1208] = 3; // Upscale Noon; 3 is gingerbread spice latte
+	else setChoice[1208] = 9; // Upscale Noon; 9 is quit
 	setChoice[1209] = 1; // Upscale Midnight
 	setChoice[1222] = 0; // The Tunnel of L.O.V.E.
 	setChoice[1223] = 0; // L.O.V. Entrance

@@ -249,7 +249,8 @@ if (!get_property("_aen_optimalRuns").to_boolean()) {
 		if (my_session_adv() > 0 && user_confirm("We have spent an adventure while free-running. Is something awry?")) abort("Ceasing.");
 		pp_outfit.change_outfit();
 		try_equip(acc1, navel);
-		if (!$familiar[Artistic Goth Kid].use()) $familiar[none].use();
+		if (get_property("shrubGifts") == "meat" && !$effect[Everything Looks Red].have() && $familiar[Crimbo Shrub].have()) $familiar[Crimbo Shrub].use();
+		else if (!$familiar[Artistic Goth Kid].use()) $familiar[none].use();
 		adv1($location[The Haunted Library], -1, "");
 		continue;
 	}

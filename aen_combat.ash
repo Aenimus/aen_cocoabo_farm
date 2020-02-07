@@ -163,6 +163,10 @@ void main(int rnd, monster mob, string pg) {
 			string pickpocket = visit_url("fight.php?action=steal", true);
 			matcher picks = create_matcher("You acquire an item: <b>tattered scrap of paper</b>", pickpocket);
 			rnd++;
+			if (my_familiar() == $familiar[Crimbo Shrub] && !$effect[Everything Looks Red].have()) {
+				$skill[Open a Big Red Present].use();
+				rnd++
+			}
 			while (!picks.find() && monster_hp() > 310 && rnd < 30 && cracker.have()) {
 				pickpocket  = throw_item(cracker);
 				picks = create_matcher("You acquire an item: <b>tattered scrap of paper</b>", pickpocket);
