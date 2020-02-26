@@ -1,6 +1,7 @@
 script "aen_utils.ash";
 
 import "aen_shortcuts.ash";
+import "aen_item_groups.ash";
 
 buffer get_funky(item [int] funks, item it) {
 	buffer b;
@@ -120,6 +121,7 @@ boolean juggle_scorpions() {
 }
 
 boolean fetch(item it) {
+	cli_execute("fold " + it.to_string());
 	if (it.have()) return true;
 	if (it.shop_amount() > 0) return take_shop(1, it);
 	if (it.closet_amount() > 0) return take_closet(1, it);
@@ -134,11 +136,13 @@ boolean fetch(item it) {
 }
 
 boolean try_equip(slot sl, item it) {
-	if(it.equipped()) {
+	if (it.equipped()) {
 		slot where = it.equipped_slot();
 		if(where == sl) return true;
 		equip(sl, $item[None]);
-	} else if(!it.have()) {
+	}
+	cli_execute("fold " + it.to_string());
+	if (!it.have()) {
 		if (it.shop_amount() > 0) take_shop(1, it);
 		else if (it.closet_amount() > 0) take_closet(1, it);
 		else if (it.display_amount() > 0) take_display(1, it);
@@ -152,8 +156,9 @@ boolean try_equip(slot sl, item it) {
 }
 
 boolean try_equip(item it) {
-	if(it.equipped()) return true;
-	if(!it.have()) {
+	if (it.equipped()) return true;
+	cli_execute("fold " + it.to_string());
+	if (!it.have()) {
 		if (it.shop_amount() > 0) take_shop(1, it);
 		else if (it.closet_amount() > 0) take_closet(1, it);
 		else if (it.display_amount() > 0) take_display(1, it);
@@ -323,6 +328,18 @@ int to_int(stat s) {
 	}
 }
 
+void optimal_eat() {
+	while (stomach_remaining() > 1) {
+		if (get_property("_universeCalculated").to_int() < get_property("skillLevel144").to_int()
+			&& reverse_numberology(0,0) contains 14) {
+			cli_execute("numberology 14");
+			continue;
+		}
+		if (!$effect[Thanksgetting].have()) $item[green bean casserole].eatsilent();
+		$item[Spooky Surprise Egg].eatsilent();
+	}
+}
+
 void optimal_consumption() {
 	if (get_campground() contains mayo_clinic) {
 		buy_until(inebriety_limit() + 2, $item[Mayodiol], 1000);
@@ -335,6 +352,7 @@ void optimal_consumption() {
 			$item[Mayodiol].use();
 			$item[Spooky Surprise Egg].eatsilent();
 		}
+		if (my_fullness() == 17 && liver_remaining() > 0) abort("Something went wrong with Mayodiol.");
 	}
 	if(pantsgiving.avail() && get_property("_pantsgivingFullness").to_int() <= 1) {
 		while (stomach_remaining() > 0) {
@@ -379,55 +397,58 @@ void drone() {
 
 void set_choices() {
 
-	int [int] setChoice;
-	setChoice[163] = 4; // Melvil Dewey Would Be Ashamed
-	setChoice[201] = 2; // Home, Home in the Range
-	setChoice[205] = 2; // Van, Damn
-	setChoice[291] = 1; // A Tight Squeeze
-	setChoice[294] = 1; // Maybe It's a Sexy Snake!
-	setChoice[781] = 6; // Earthbound and Down
-	setChoice[888] = 4; // Take a Look, it's in a Book! (Rise)
-	setChoice[889] = 5; // Take a Look, it's in a Book! (Fall)
-	setChoice[1202] = 2; // Noon in the Civic Center
-	setChoice[1203] = 4; // Midnight in the Civic Center;
-	if ($item[sprinkles].item_amount() > 49) setChoice[1208] = 3; // Upscale Noon; 3 is gingerbread spice latte
-	else setChoice[1208] = 9; // Upscale Noon; 9 is quit
-	setChoice[1209] = 1; // Upscale Midnight
-	setChoice[1222] = 0; // The Tunnel of L.O.V.E.
-	setChoice[1223] = 0; // L.O.V. Entrance
-	setChoice[1224] = 0; // L.O.V. Equipment Room
-	setChoice[1225] = 0; // L.O.V. Engine Room
-	setChoice[1226] = 0; // L.O.V. Emergency Room
-	setChoice[1227] = 0; // L.O.V. Elbow Room
-	setChoice[1228] = 0; // L.O.V. Emporium
-	setChoice[1236] = 6; // Space Cave
-	setChoice[1237] = 6; // A Simple Plant
-	setChoice[1238] = 6; // A Complicated Plant
-	setChoice[1239] = 6; // What a Plant!
-	setChoice[1240] = 6; // The Animals, The Animals
-	setChoice[1241] = 6; // Buffalo-Like Animal, Won't You Come Out Tonight
-	setChoice[1242] = 6; // House-Sized Animal
-	setChoice[1243] = 1; // Interstellar Trade
-	setChoice[1244] = 1; // Here There Be No Spants
-	setChoice[1245] = 1; // Recovering the Satellite
-	setChoice[1246] = 6; // Land Ho
-	setChoice[1247] = 6; // Half The Ship it Used to Be
-	setChoice[1248] = 6; // Paradise Under a Strange Sun
-	setChoice[1249] = 6; // That's No Moonlith, it's a Monolith!
-	setChoice[1250] = 6; // I'm Afraid It's Terminal
-	setChoice[1251] = 6; // Curses, a Hex
-	setChoice[1252] = 6; // Time Enough at Last
-	setChoice[1253] = 6; // Mother May I
-	setChoice[1254] = 6; // Please Baby Baby Please
-	setChoice[1255] = 1; // Cool Space Rocks
-	setChoice[1256] = 1; // Wide Open Spaces
-	setChoice[1310] = 0; // Granted a Boon
-	setChoice[1322] = 2; // The Beginning of the Neverend
-	setChoice[1324] = 5; // It Hasn't Ended, It's Just Paused
-	setChoice[1340] = 1; // Is There A Doctor In The House?
-	setChoice[1341] = 1; // A Pound of Cure
+	int [int] set_choice;
+	set_choice[163] = 4; // Melvil Dewey Would Be Ashamed
+	set_choice[201] = 2; // Home, Home in the Range
+	set_choice[205] = 2; // Van, Damn
+	set_choice[291] = 1; // A Tight Squeeze
+	set_choice[294] = 1; // Maybe It's a Sexy Snake!
+	set_choice[781] = 6; // Earthbound and Down
+	set_choice[888] = 4; // Take a Look, it's in a Book! (Rise)
+	set_choice[889] = 5; // Take a Look, it's in a Book! (Fall)
+	set_choice[1202] = 2; // Noon in the Civic Center
+	set_choice[1203] = 4; // Midnight in the Civic Center;
+	if ($item[sprinkles].item_amount() > 49) set_choice[1208] = 3; // Upscale Noon; 3 is gingerbread spice latte
+	else set_choice[1208] = 9; // Upscale Noon; 9 is quit
+	if ($item[sprinkles].item_amount() > 49) {
+		set_choice[1209] = 2;
+		set_choice[1214] = 0; // &TODO Assess this
+	} else set_choice[1209] = 1; // Upscale Midnight
+	set_choice[1222] = 0; // The Tunnel of L.O.V.E.
+	set_choice[1223] = 0; // L.O.V. Entrance
+	set_choice[1224] = 0; // L.O.V. Equipment Room
+	set_choice[1225] = 0; // L.O.V. Engine Room
+	set_choice[1226] = 0; // L.O.V. Emergency Room
+	set_choice[1227] = 0; // L.O.V. Elbow Room
+	set_choice[1228] = 0; // L.O.V. Emporium
+	set_choice[1236] = 6; // Space Cave
+	set_choice[1237] = 6; // A Simple Plant
+	set_choice[1238] = 6; // A Complicated Plant
+	set_choice[1239] = 6; // What a Plant!
+	set_choice[1240] = 6; // The Animals, The Animals
+	set_choice[1241] = 6; // Buffalo-Like Animal, Won't You Come Out Tonight
+	set_choice[1242] = 6; // House-Sized Animal
+	set_choice[1243] = 1; // Interstellar Trade
+	set_choice[1244] = 1; // Here There Be No Spants
+	set_choice[1245] = 1; // Recovering the Satellite
+	set_choice[1246] = 6; // Land Ho
+	set_choice[1247] = 6; // Half The Ship it Used to Be
+	set_choice[1248] = 6; // Paradise Under a Strange Sun
+	set_choice[1249] = 6; // That's No Moonlith, it's a Monolith!
+	set_choice[1250] = 6; // I'm Afraid It's Terminal
+	set_choice[1251] = 6; // Curses, a Hex
+	set_choice[1252] = 6; // Time Enough at Last
+	set_choice[1253] = 6; // Mother May I
+	set_choice[1254] = 6; // Please Baby Baby Please
+	set_choice[1255] = 1; // Cool Space Rocks
+	set_choice[1256] = 1; // Wide Open Spaces
+	set_choice[1310] = 0; // Granted a Boon
+	set_choice[1322] = 2; // The Beginning of the Neverend
+	set_choice[1324] = 5; // It Hasn't Ended, It's Just Paused
+	set_choice[1340] = 1; // Is There A Doctor In The House?
+	set_choice[1341] = 1; // A Pound of Cure
 
-	foreach choice_number, value in setChoice {
+	foreach choice_number, value in set_choice {
 		set_property("choiceAdventure" + choice_number, value);
 	}
 
@@ -446,6 +467,23 @@ boolean change_outfit(string outfitName) { // @TODO: Clean up; possibly add fami
   return cli_execute("outfit " + outfitName);
 }
 
+int get_summons(item_group ig) {
+	string summons = ig.summons;
+	return call int summons();
+}
+
+int ig_libram_brick_summons() {
+	return get_property("_brickoEyeSummons").to_int();
+}
+
+int ig_libram_favor_summons() {
+	return get_property("_favorRareSummons").to_int();
+}
+
+int ig_libram_taffy_summons() {
+	return get_property("_taffyRareSummons").to_int();
+}
+
 void multi_fight() {
     while(in_multi_fight()) run_combat();
     if(choice_follows_fight()) run_choice(-1);
@@ -456,4 +494,80 @@ void closet_stuff() {
 	closet_until(0, $item[sand dollar]);
 	closet_until(0, $item[Special Seasoning]);
 	closet_until(0, $item[ten-leaf clover]);
+}
+
+void escape_choice() {
+	visit_url("/place.php?whichplace=monorail&action=monorail_downtown", false); // This is to resuscitate Mafia's realisation of "non-trapping choice.php"
+	run_choice(7);
+	visit_url("main.php");
+}
+
+void initial_prompt() {
+	foreach str in $strings[
+		embezzler_outfit,
+		cocoabo_outfit,
+		alternative_outfit,
+		pickpocket_outfit,
+		max_weight_outfit,
+		day_clan,
+		rollover_clan,
+		copy_monster,
+		camera_monster,
+	] {
+		if (get_property("aen_" + str) == "") abort("Read and then run aen_initial.ash to set your outfits and other variables, first.");
+	}
+}
+
+string alternative_outfit() {
+	string check = get_property("aen_alternative_outfit");
+	if (check == "") abort("Read and run aen_inital.ash first.");
+	return check;
+}
+
+string cocoabo_outfit() {
+	string check = get_property("aen_cocoabo_outfit");
+	if (check == "") abort("Read and run aen_inital.ash first.");
+	return check;
+}
+
+string embezzler_outfit() {
+	string check = get_property("aen_embezzler_outfit");
+	if (check == "") abort("Read and run aen_inital.ash first.");
+	return check;
+}
+
+string max_weight_outfit() {
+	string check = get_property("aen_max_weight_outfit");
+	if (check == "") abort("Read and run aen_inital.ash first.");
+	return check;
+}
+
+string pickpocket_outfit() {
+	string check = get_property("aen_pickpocket_outfit");
+	if (check == "") abort("Read and run aen_inital.ash first.");
+	return check;
+}
+
+string day_clan() {
+	string check = get_property("aen_day_clan");
+	if (check == "") abort("Read and run aen_inital.ash first.");
+	return check;
+}
+
+string camera_monster() {
+	string check = get_property("aen_camera_monster");
+	if (check == "") abort("Read and run aen_inital.ash first.");
+	return check;
+}
+
+string rollover_clan() {
+	string check = get_property("aen_rollover_clan");
+	if (check == "") abort("Read and run aen_inital.ash first.");
+	return check;
+}
+
+string copy_monster() {
+	string check = get_property("aen_copy_monster");
+	if (check == "") abort("Read and run aen_inital.ash first.");
+	return check;
 }

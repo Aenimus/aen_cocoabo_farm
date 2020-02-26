@@ -1,4 +1,5 @@
 script "aen_hookah.ash";
+import "aen_utils.ash";
 
 void hookah_uneffect() {
 	if (hookah.have_equipped()) {
@@ -46,5 +47,3 @@ void hookah_uneffect() {
 		}
 	}
 }
-
-

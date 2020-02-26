@@ -5,7 +5,7 @@ boolean comma_have() {
 }
 
 int comma_fights() {
-	return get_property("aen_commaFights").to_int();
+	return get_property("aen_comma_fights").to_int();
 }
 
 boolean comma_fights_check() {
@@ -15,7 +15,7 @@ boolean comma_fights_check() {
 }
 
 void comma_fights_increment() {
-	if (my_familiar() == comma) set_property("aen_commaFights", comma_fights() + 1);
+	if (my_familiar() == comma) set_property("aen_comma_fights", comma_fights() + 1);
 }
 
 boolean comma_change(string target) {
@@ -28,7 +28,7 @@ boolean comma_change(string target) {
 		if (!eqp.have()) abort("You have run out of " + eqp + ".");
 		print("Changing the Comma Chameleon into a " + target_fam + ".", "purple");
 		visit_url("/inv_equip.php?pwd=" + my_hash() + "&which=2&action=equip&whichitem=" + eqp.to_int());
-		set_property("aen_commaFights", 0);
+		set_property("aen_comma_fights", 0);
 		visit_url("charpane.php");
 	}
 	return get_property("commaFamiliar") == target;
@@ -50,7 +50,7 @@ boolean comma_run(string target) {
 		if (!eqp.have()) abort("You have run out of " + eqp + ".");
 		print("Changing the Comma Chameleon into a " + target_fam + ".", "purple");
 		visit_url("/inv_equip.php?pwd=" + my_hash() + "&which=2&action=equip&whichitem=" + eqp.to_int());
-		set_property("aen_commaFights", 0);
+		set_property("aen_comma_fights", 0);
 		comma_refresh();
 	}
 	return get_property("commaFamiliar") == target;

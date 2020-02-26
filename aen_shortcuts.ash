@@ -12,8 +12,9 @@ item trav_trous = $item[Travoltan trousers];
 item vote_sticker = $item[&quot;I Voted!&quot; sticker];
 
 // Familiars
-familiar bander = $familiar[Frumious Bandersnatch];
 familiar comma = $familiar[Comma Chameleon];
+familiar hand = $familiar[Disembodied Hand];
+familiar bander = $familiar[Frumious Bandersnatch];
 familiar stomp_boots = $familiar[Pair of Stomping Boots];
 
 // Items
@@ -23,12 +24,15 @@ item enamorang = $item[LOV enamorang];
 item pyec = $item[Platinum Yendorian Express Card];
 item sgeea = $item[soft green echo eyedrop antidote];
 item tatter = $item[tattered scrap of paper];
+
 // IotMs
 item asdon = $item[Asdon Martin keyfob];
 item b_box = $item[Rain-Doh black box];
 item feast = $item[moveable feast];
+item helicopter = $item[Loathing Legion helicopter];
 item mayo_clinic = $item[portable Mayo Clinic];
 item navel = $item[navel ring of navel gazing];
+item peeper = $item[Eight Days a Week Pill Keeper];
 item sheet = $item[Spooky Putty sheet];
 item terminal = $item[Source Terminal];
 item timespinner = $item[Time-Spinner];
@@ -36,6 +40,9 @@ item vip_key = $item[Clan VIP Lounge key];
 
 // Locations
 location nep = $location[The Neverending Party];
+
+// Monsters
+monster embezzler = $monster[Knob Goblin Embezzler];
 
 // Skills
 skill ode = $skill[The Ode to Booze];

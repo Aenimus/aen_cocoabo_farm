@@ -28,7 +28,7 @@ boolean saber_upgrade_run() {
 }
 
 boolean saber_pygmy_can() {
-	return !get_property("_aen_pygmyAbort").to_boolean();
+	return !get_property("_aen_pygmy_abort").to_boolean();
 }
 boolean saber_force_pygmy_should(int banishes, int forces) {
 	if (!saber_force_can()) return false;
@@ -39,7 +39,7 @@ boolean saber_force_pygmy_run(int forces) {
 	if (kramco.try_equip()) print("Wearing the Kramco grinder in a goblin friendly zone.", "purple");
 	if (bworps.have()) juggle_scorpions(0);
 	print("We are preparing to use the force on a drunk pygmy.", "purple");
-	set_property("aen_useForce", "true"); // For combat script @TODO String for monstername
+	set_property("aen_use_force", "true"); // For combat script @TODO String for monstername
 	adv1($location[The Hidden Bowling Alley], -1, ""); // Use the force
 	return forces + 1 == saber_forces();
 }
