@@ -8,6 +8,14 @@ int timespinner_mins_left() {
 	return 10 - get_property("_timeSpinnerMinutesUsed").to_int();
 }
 
+int timespinner_pranks() {
+	return get_property("_aen_pranks_today").to_int();
+}
+
+void timespinner_pranks_check() {
+	if (get_property("_aen_pranks_today").to_int() < 6) abort("Acquire 6 time pranks.");
+}
+
 boolean [item] timespinner_eaten() {
 	string [int] food_strings = get_property("_timeSpinnerFoodAvailable").split_string(",");
 	boolean [item] eaten;

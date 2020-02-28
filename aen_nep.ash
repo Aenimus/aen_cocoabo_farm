@@ -13,10 +13,11 @@ boolean nep_free_turn_can() {
 }
 
 boolean nep_free_turn_run() {
+	int turns = nep_free_turns();
 	print("Spending a free turn in the Neverending Party.", "purple");
 	if (kramco.try_equip()) print("Wearing the Kramco grinder in a goblin friendly zone.", "purple");
 	adv1($location[The Neverending Party], -1, "");
-	return true;
+	return turns < nep_free_turns();
 }
 
 /*

@@ -33,10 +33,9 @@ void daily_aftercore() {
 		visit_url("campground.php?action=witchess");
 		run_choice(3);
 		run_choice(2);
-		visit_url("main.php");
 		escape_choice();
 	}
 	while (get_campground() contains $item[Source Terminal] && get_property("_sourceTerminalEnhanceUses").to_int() < 3) cli_execute("terminal enhance meat");
-	visit_url("main.php");
+	if (!get_property("_bagOTricksUsed").to_boolean()) $item[Bag o\' Tricks].try_use();
 	escape_choice();
 }

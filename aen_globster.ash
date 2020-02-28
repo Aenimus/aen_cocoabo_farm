@@ -42,7 +42,7 @@ boolean globster_run(string eqp, int option) {
 	int fights = globster_fights();
 	item desired = ("God Lobster's " + eqp).to_item();
 
-	if (desired == $item[none]) abort("God Lobster cannot be adorned with " + eqp);
+	if (desired == $item[none]) abort("God Lobster cannot be adorned with " + eqp + ".");
 	$familiar[God Lobster].use();
 
 	item regalis = desired.globster_closest();
@@ -55,7 +55,7 @@ boolean globster_run(string eqp, int option) {
 	run_combat();
 	visit_url("choice.php");
 	run_choice(option);
-	return fights + 1 == globster_fights();
+	return fights < globster_fights();
 }
 
 boolean globster_run(int eqp, int option) {

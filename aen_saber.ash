@@ -20,7 +20,7 @@ boolean saber_upgrade_run(int upgrade) {
 	if (!saber_upgrade_can()) return false;
 	visit_url("main.php?action=may4");
 	run_choice(upgrade);
-	return get_property("_saberMod").to_boolean();
+	return get_property("_saberMod").to_int() == upgrade;
 }
 
 boolean saber_upgrade_run() {
@@ -30,6 +30,7 @@ boolean saber_upgrade_run() {
 boolean saber_pygmy_can() {
 	return !get_property("_aen_pygmy_abort").to_boolean();
 }
+
 boolean saber_force_pygmy_should(int banishes, int forces) {
 	if (!saber_force_can()) return false;
 	return banishes == (10 + (forces * 2));
@@ -41,7 +42,7 @@ boolean saber_force_pygmy_run(int forces) {
 	print("We are preparing to use the force on a drunk pygmy.", "purple");
 	set_property("aen_use_force", "true"); // For combat script @TODO String for monstername
 	adv1($location[The Hidden Bowling Alley], -1, ""); // Use the force
-	return forces + 1 == saber_forces();
+	return forces < saber_forces();
 }
 
 boolean saber_pygmy_run() {
@@ -55,5 +56,5 @@ boolean saber_pygmy_run() {
 	comma_fights_increment();
 	print("We are fighting the forced drunk pygmies.", "purple");
 	adv1($location[The Hidden Bowling Alley], -1, "");
-	return (banishes + 1 == pygmy_free_banishes());
+	return banishes < pygmy_free_banishes();
 }

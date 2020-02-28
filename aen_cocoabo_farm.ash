@@ -22,10 +22,9 @@ if (!get_property("_aen_cocoabo_stock").to_boolean()) {
 	closet_until(-1, bworps);
 	
 	// Copiers
-	buy_until(1, $item[pulled green taffy], 1000);
 	if (!$item[unfinished ice sculpture].avail()) {
-		buy_until(3, $item[snow berries], 3000);
-		buy_until(3, $item[ice harvest], 3000);
+		buy_until(3, $item[snow berries], 3334);
+		buy_until(3, $item[ice harvest], 3334);
 		cli_execute("create unfinished ice sculpture");
 	}
 
@@ -66,11 +65,14 @@ if (!get_property("_aen_cocoabo_setup").to_boolean()) {
 	chosen_libram = libram_today(true);
 	
 	// @TODO Automation for this
+	if (vote_can()) vote_run();
 	if(!vote_sticker.have() && get_property("voteAlways").to_boolean()) abort("Go get your vote intrinsics, first.");
 	
 	if (horsery_have()) horsery_run("dark");
 
-	saber_upgrade_run();
+	escape_choice();
+
+	if (!saber_upgrade_run()) abort("Something went wrong when upgrading the saber.");
 	
 	optimal_eat(); //Eats to fullness -1.
 	
@@ -106,10 +108,9 @@ if (!get_property("_aen_cocoabo_setup").to_boolean()) {
 	if (get_property("getawayCampsiteUnlocked").to_boolean()) {
 		while (get_property("timesRested").to_int() < total_free_rests()) visit_url("place.php?whichplace=campaway&action=campaway_tentclick");
 	}
-	
-	if (!get_property("_bagOTricksUsed").to_boolean()) $item[Bag o\' Tricks].try_use();
+
 	if (!$item[burning paper crane].fetch()) cli_execute("create burning paper crane");
-	if (get_property("_bastilleGames").to_int() < 1) bastille_batallion(3, 1, 3, 0);
+	if (bastille_can()) bastille_run($stat[Mysticality], $item[Brutal brogues], $effect[Bastille Braggadocio]);
 
 	// Volcoino
 	volcano_tower(7);
@@ -165,8 +166,8 @@ if (!get_property("_aen_free_runs").to_boolean()) {
 				set_property("aen_max_runs", floor(run_familiar.total_weight()/5));
 			}
 			
-			if (get_property("_reflexHammerUsed").to_int() < 1) try_equip(acc1, doc_bag);
-			else if (doc_bag.have_equipped() && get_property("_reflexHammerUsed").to_int() > 0) try_equip(acc1, $item[mime army infiltration glove]);
+			if (!get_property("_stinkyCheeseBanisherUsed").to_boolean()) try_equip(acc1, $item[stinky cheese eye]);
+			else if ($item[stinky cheese eye].equipped() && get_property("_stinkyCheeseBanisherUsed").to_boolean()) try_equip(acc1, $item[mime army infiltration glove]);
 			adv1($location[The Haunted Library], -1, "");
 			continue;
 		}
@@ -181,12 +182,12 @@ if (!get_property("_aen_free_runs").to_boolean()) {
 		cli_execute("/cast * " + chosen_libram);
 		if (get_property("_latteBanishUsed").to_boolean() && get_property("_latteRefillsUsed").to_int() < 3) cli_execute("latte refill cajun pumpkin rawhide");
 		pickpocket_outfit().change_outfit();
-		if (!get_property("_stinkyCheeseBanisherUsed").to_boolean()) try_equip(acc1, $item[stinky cheese eye]);
-		else if (!get_property("_vmaskBanisherUsed").to_boolean()) try_equip(acc1, $item[V for Vivala mask]);
+		if (!get_property("_vmaskBanisherUsed").to_boolean()) try_equip(acc1, $item[V for Vivala mask]);
 		else if (get_property("_kgbTranquilizerDartUses").to_int() < 3) try_equip(acc1, kgb);
+		else if (get_property("_reflexHammerUsed").to_int() < 3) try_equip(acc1, doc_bag);
 		else if (!get_property("_latteBanishUsed").to_boolean()) $item[latte lovers member\'s mug].try_equip();
 		else if (get_property("_navelRunaways").to_int() < 3) try_equip(acc1, navel);
-		else {
+		else if (get_property("_snokebombUsed").to_int() > 1) {
 			all_runs = true;
 			continue;
 		}
@@ -208,25 +209,27 @@ if (!get_property("_aen_free_runs").to_boolean()) {
 
 // Main fight Loop
 while (get_property("_aen_cocoabo_farm").to_boolean() && my_inebriety() < inebriety_limit() + 1) {
+
 	print("Initiating start of loop.", "purple");
 	cli_execute("/cast * " + chosen_libram);
 	cocoabo_outfit().change_outfit();
 	if ($item[buddy bjorn].have_equipped() && my_bjorned_familiar() != $familiar[misshapen animal skeleton]) $familiar[misshapen animal skeleton].bjornify_familiar();
+	
+	// Familiar Stuff
 	cocoabo_today().use();
+	comma_run("Feather Boa Constrictor");
 	if (!cocoabo_exception()) helicopter.legion_equip();
 	hookah_uneffect();
-	// Tracking turns spent across sessions
-		data_session_adv_update();
 	
-	// Tracking meat earned across sessions
-		data_session_meat_update();
-
-	if (last_monster() == embezzler) data_adv_threshold_check(5);
+	// Adventure tracking and protection; meat tracking
+	data_session_adv_update();
+	data_session_meat_update();
+	if (embezzlers_today() > 0) data_adv_threshold_check(5);
 	else data_adv_threshold_check();
-	if (cocoabo_exception() && !comma_change("Feather Boa Constrictor")) abort("Something went wrong with changing the Comma Chameleon.");
-	closet_stuff();
+
 	if (!$effect[Inscrutable Gaze].have()) $skill[Inscrutable Gaze].use();
-	
+	closet_stuff();
+		
 	// Vote monster
 	if(total_turns_played() % 11 == 1 && get_property("_voteFreeFights").to_int() < 3 && total_turns_played() != get_property("lastVoteMonsterTurn").to_int()) {
 		if (try_equip(acc1, $item[&quot;I voted!&quot; sticker])) {
@@ -366,12 +369,17 @@ while (get_property("_aen_cocoabo_farm").to_boolean() && my_inebriety() < inebri
 	// @TODO file
 	if (get_property("_powerPillUses").to_int() < 20) {
 		if ($item[The Jokester's gun].avail() && !get_property("_firedJokestersGun").to_boolean()) $item[The Jokester's gun].try_equip();
-		else if (doc_bag.avail() && get_property("_chestXRayUsed").to_int() < 3) try_equip(acc1, doc_bag);
+		else if (get_property("_chestXRayUsed").to_int() < 3) try_equip(acc1, doc_bag);
 		$item[drum machine].use();
 		continue;
 	}
 	
 	// Drunk pygmies
+	if (get_property("_snokebombUsed").to_int() == 2) {
+		pygmy_free_banish_prep();
+		continue;
+	}
+	
 	if (pygmy_free_banish_can(10)) {
 		pygmy_free_banish_run();
 		continue;
@@ -402,15 +410,15 @@ while (get_property("_aen_cocoabo_farm").to_boolean() && my_inebriety() < inebri
 		continue;
 	}
 
-	if (get_property("_aen_pranks_today").to_int() < 6) abort("Acquire 6 time pranks.");
+	timespinner_pranks_check();
 	
-	if (kramco_grind_until(20));
+	kramco_grind_until(20);
 	
 	if ($item[Beach Comb].avail() && get_property("_freeBeachWalksUsed") < 11) abort("Use your free beach walks.");
 	
 	if (!get_property("_workshedItemUsed").to_boolean() && mayo_clinic.have()
 		&& user_confirm("Change your workshed to the Mayo Clinic?")) {
-			mayo_clinic.use();
+		mayo_clinic.use();
 	}
 
 	if (stomach_remaining() > 0) optimal_consumption();

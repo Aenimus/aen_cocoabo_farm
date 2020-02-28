@@ -10,7 +10,7 @@ boolean legion_have(item llk) {
 	item_group ig_legion = ig_legion();
 	foreach fold in ig_legion.items {
 		if (ig_legion.items[fold].fetch()) {
-			cli_execute("fold " + llk.to_string());
+			cli_execute("try; fold " + llk.to_string());
 			break;
 		}
 	}

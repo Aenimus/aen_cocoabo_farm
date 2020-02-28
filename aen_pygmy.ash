@@ -19,5 +19,13 @@ boolean pygmy_free_banish_run() {
 	if (kramco.try_equip()) print("Wearing the Kramco grinder in a goblin friendly zone.", "purple");
 	if (my_familiar() == $familiar[Comma Chameleon]) set_property("aen_commaFights", get_property("aen_commaFights").to_int() + 1);
 	adv1($location[The Hidden Bowling Alley], -1, "");
-	return banishes + 1 == pygmy_free_banishes();
+	return banishes < pygmy_free_banishes();
+}
+
+boolean pygmy_free_banish_prep() {
+	print("Banishing other pygmies.", "purple");
+	juggle_scorpions(0);
+	if (kramco.try_equip()) print("Wearing the Kramco grinder in a goblin friendly zone.", "purple");
+	adv1($location[The Hidden Bowling Alley], -1, "");
+	return get_property("_snokebombUsed").to_int() > 2;
 }

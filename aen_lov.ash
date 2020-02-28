@@ -1,4 +1,4 @@
-script "aen_love.ash";
+script "aen_lov.ash";
 
 boolean lov_have() {
 	return get_property("loveTunnelAvailable").to_boolean();

@@ -28,9 +28,10 @@ boolean peeper_run(int option) {
 		
 boolean peeper_embezzler_run() {
 	if (peeper_run(7)) {
+		int embezzlers = embezzlers_today();
 		embezzler_prep();
 		adv1($location[Cobb\'s Knob Treasury], 0, "");
-		return last_monster() == embezzler;
+		return embezzlers + 1 == embezzlers_today();
 	}
 	abort("Something went wrong with the pill keeper.");
 	return false;

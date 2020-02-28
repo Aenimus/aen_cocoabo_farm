@@ -14,6 +14,11 @@ buffer get_funky(item [int] funks, item it) {
 	return b;
 }
 
+string plural(item it, int qty) {
+	if (qty == 1) return "1 " + it.to_string();
+	return qty + " " + it.plural;
+}
+
 boolean use(int amt, skill skl) {
 	return(use_skill(amt, skl));
 }
@@ -120,8 +125,23 @@ boolean juggle_scorpions() {
 	return closet_until(get_property("_drunkPygmyBanishes").to_int(), $item[bowl of scorpions]);
 }
 
+boolean fetch(item it, boolean store) {
+	cli_execute("try; fold " + it.to_string());
+	if (it.have()) return true;
+	if (store && it.shop_amount() > 0) return take_shop(1, it);
+	if (it.closet_amount() > 0) return take_closet(1, it);
+	if (it.display_amount() > 0) return take_display(1, it);
+	if (it.storage_amount() > 0) return take_storage(1, it);
+	if (it.equipped()) {
+		slot it_slot = it.equipped_slot();
+		return equip(it_slot, $item[none]);
+	}
+	print("Could not fetch: " + it.to_string() + ".", "red");
+	return false;
+}
+
 boolean fetch(item it) {
-	cli_execute("fold " + it.to_string());
+	cli_execute("try; fold " + it.to_string());
 	if (it.have()) return true;
 	if (it.shop_amount() > 0) return take_shop(1, it);
 	if (it.closet_amount() > 0) return take_closet(1, it);
@@ -141,7 +161,7 @@ boolean try_equip(slot sl, item it) {
 		if(where == sl) return true;
 		equip(sl, $item[None]);
 	}
-	cli_execute("fold " + it.to_string());
+	cli_execute("try; fold " + it.to_string());
 	if (!it.have()) {
 		if (it.shop_amount() > 0) take_shop(1, it);
 		else if (it.closet_amount() > 0) take_closet(1, it);
@@ -157,7 +177,7 @@ boolean try_equip(slot sl, item it) {
 
 boolean try_equip(item it) {
 	if (it.equipped()) return true;
-	cli_execute("fold " + it.to_string());
+	cli_execute("try; fold " + it.to_string());
 	if (!it.have()) {
 		if (it.shop_amount() > 0) take_shop(1, it);
 		else if (it.closet_amount() > 0) take_closet(1, it);
@@ -237,11 +257,6 @@ boolean rebalance(int casts, skill skl) {
 boolean rebalance(skill skl) {
 	if (can_skill(skl)) return use_skill(1, skl);
 	return false;
-}
-
-string plural(item it, int q) {
-	if (q == 1) return "1 " + it.to_string();
-	return q + " " + it.plural;
 }
 
 string temp_prefix = "aen_";
@@ -485,8 +500,8 @@ int ig_libram_taffy_summons() {
 }
 
 void multi_fight() {
-    while(in_multi_fight()) run_combat();
-    if(choice_follows_fight()) run_choice(-1);
+    while (in_multi_fight()) run_combat();
+    if (choice_follows_fight()) run_choice(-1);
 }
 
 void closet_stuff() {
@@ -497,9 +512,13 @@ void closet_stuff() {
 }
 
 void escape_choice() {
-	visit_url("/place.php?whichplace=monorail&action=monorail_downtown", false); // This is to resuscitate Mafia's realisation of "non-trapping choice.php"
-	run_choice(7);
-	visit_url("main.php");
+	if (get_property("loveTunnelAvailable").to_boolean()) {
+		visit_url("place.php?whichplace=town_wrong&action=townwrong_tunnel", false);
+		run_choice(2);
+		visit_url("main.php");
+	} else {
+		print("Need to think of a way to escape choices if one doesn't have Love Tunnel...");
+	}
 }
 
 void initial_prompt() {

@@ -54,20 +54,14 @@ void main(int rnd, monster mob, string pg) {
 		}
 		
 		if (mob == $monster[Knob Goblin Embezzler]) {
+			embezzlers_today_increment();
 			item [int] funks;
 		
 			if (get_property("_sourceTerminalDigitizeUses").to_int() < 1 && $skill[Digitize].have_skill()) {
 				use_skill(1, $skill[Digitize]);
 				rnd++;
 			}
-			
-			/*while(!get_property("_cameraUsed").to_boolean() && !$item[shaking 4-d camera].have()) {
-				get_funky(funks, $item[4-d camera]);
-				get_funky(funks, $item[4-d camera]);
-				if  (count(funks) == 1) throw_item(funks[0]);
-				rnd++;
-			} */ // removed because pill keeper is just cheaper.
-			
+
 			while(monster_hp() > 310 && rnd < 10) {
 				if (!extracted) {
 					extract.use();
@@ -83,7 +77,7 @@ void main(int rnd, monster mob, string pg) {
 				rnd++;
 			}
 			
-			if($skill[Summer Siesta].have()) $skill[Summer Siesta].use();
+			$skill[Summer Siesta].try_use();
 			visit_url("fight.php?action=macro&macrotext=" + macro_finish.url_encode(), true, true);
 		}
 		
@@ -98,18 +92,18 @@ void main(int rnd, monster mob, string pg) {
 			if ($item[replica bat-oomerang].have() && get_property("_usedReplicaBatoomerang").to_int() < 3) $item[replica bat-oomerang].throw_item();
 			if ($item[power pill].have() && get_property("_powerPillUses").to_int() < 20) $item[power pill].throw_item();
 			else abort("You have run out of power pills.");
-			// if (monster_hp() > 0) abort("Something went wrong while fighting a giant sandworm.");
 		}
 		
+		// The Hidden Bowling Alley
 		if (mob == $monster[pygmy bowler]) {
 			visit_url("fight.php?action=macro&macrotext=" + macro_essentials.url_encode(), true, true);
-			use_skill(1, $skill[Snokebomb]);
+			$skill[Snokebomb].try_use();
 		}
 
 		if (mob == $monster[pygmy orderlies]) {
 			visit_url("fight.php?action=macro&macrotext=" + macro_essentials.url_encode(), true, true);
-			if ($skill[reflex hammer].have()) $skill[reflex hammer].use();
-			else abort("Banish the pygmy orderlies, somehow.");
+			$skill[Reflex Hammer].try_use();
+			if (!$skill[Snokebomb].try_use()) abort("Banish the pygmy orderlies, somehow.");
 		}
 		
 		if (mob == $monster[pygmy janitor]) {
@@ -117,17 +111,21 @@ void main(int rnd, monster mob, string pg) {
 			abort("Banish the janitors in the park.");
 		}
 		
-		if (mob == $monster[drunk pygmy] && get_property("_drunkPygmyBanishes").to_int() > 9) {
-			visit_url("fight.php?action=macro&macrotext=" + macro_essentials.url_encode(), true, true);
-			while(monster_hp() > 310 && rnd < 8) {
-				$item[seal tooth].throw_item();
-				rnd++;
-			}
+		if (mob == $monster[drunk pygmy]) {
+			if (!bworps.have()) {
+				visit_url("fight.php?action=macro&macrotext=" + macro_essentials.url_encode(), true, true);
+				if (get_property("_snokebombUsed").to_int() == 2 && $skill[Macrometeorite].try_use()) $skill[Snokebomb];
 
-			if (get_property("aen_use_force").to_boolean()) {
-				use_skill(1, 7311.to_skill());
-				set_property("aen_use_force", "false");
-				run_choice(2);
+				while(monster_hp() > 310 && rnd < 8) {
+					$item[seal tooth].throw_item();
+					rnd++;
+				}
+
+				if (get_property("aen_use_force").to_boolean()) { //@TODO ID matching
+					use_skill(1, 7311.to_skill());
+					set_property("aen_use_force", "false");
+					run_choice(2);
+				}
 			}
 		}
 		
@@ -142,20 +140,18 @@ void main(int rnd, monster mob, string pg) {
 			$item[gingerbread cigarette].throw_item();
 		}
 		
-		if (mob == $monster[tumbleweed]) {
-			abort();
-		}
-		
 		if (mob == $monster[gingerbread rat] || mob == $monster[gingerbread pigeon]) {
 			visit_url("fight.php?action=macro&macrotext=" + macro_essentials.url_encode(), true, true);
 			if (get_property("_snokebombUsed").to_int() > 1) $skill[Snokebomb].use();
 			$skill[Asdon Martin: Spring-Loaded Front Bumper].use();
 		}
 		
+		// The Haunted Library
 		if (mob == $monster[banshee librarian] || mob == $monster[writing desk]) {
 			visit_url("fight.php?action=macro&macrotext=" + macro_essentials.url_encode(), true, true);
-			if ($skill[Reflex Hammer].have()) $skill[Reflex Hammer].use();
-			if ($skill[Snokebomb].have()) $skill[Snokebomb].use();
+			$skill[Give Your Opponent the Stinkeye].try_use();
+			if (get_property("_snokebombUsed").to_int() < 1 && $skill[Snokebomb].have()) $skill[Snokebomb].use();
+			else abort("Something went wrong with banishing in the library.");
 		}
 
 		if (mob == $monster[bookbat]) {
@@ -164,17 +160,7 @@ void main(int rnd, monster mob, string pg) {
 			matcher picks = create_matcher("You acquire an item: <b>tattered scrap of paper</b>", pickpocket);
 			rnd++;
 			
-			while (!picks.find() && monster_hp() > 310 && rnd < 30 && cracker.have()) {
-				pickpocket  = throw_item(cracker);
-				picks = create_matcher("You acquire an item: <b>tattered scrap of paper</b>", pickpocket);
-				rnd++;
-			}
-			
-			if (my_familiar() == $familiar[Crimbo Shrub] && !$effect[Everything Looks Red].have()) {
-				$skill[Open a Big Red Present].use();
-				rnd++;
-			}
-			
+
 			if (monster_hp() > 310 && rnd < 30) {
 				extract.use();
 				rnd++;
@@ -185,33 +171,53 @@ void main(int rnd, monster mob, string pg) {
 				rnd++;
 			}
 			
-			if (monster_hp() > 310 && rnd < 30 && get_property("_vampyreCloakeFormUses").to_int() < 10 && $item[vampyric cloake].have_equipped()) {
+			if (monster_hp() > 310 && rnd < 30 && get_property("_vampyreCloakeFormUses").to_int() < 10 && $item[vampyric cloake].equipped()) {
 				$skill[Become a Wolf].use();
 				rnd++;
 			}
+			
+			while (!picks.find() && monster_hp() > 310 && rnd < 30 && cracker.have()) {
+				pickpocket  = throw_item(cracker);
+				picks = create_matcher("You acquire an item: <b>tattered scrap of paper</b>", pickpocket);
+				rnd++;
+			}
+			
+			if ($item[stinky cheese eye].equipped() && $skill[Macrometeorite].try_use()) $skill[Give Your Opponent the Stinkeye].use();
+			if (get_property("_snokebombUsed").to_int() < 1 && $skill[Snokebomb].have() && $skill[Macrometeorite].try_use()) $skill[Snokebomb].use();
+						
+			if (my_familiar() == $familiar[Crimbo Shrub] && !$effect[Everything Looks Red].have()) {
+				$skill[Open a Big Red Present].use();
+				rnd++;
+			}
+			
+			if (monster_hp() > 310 && get_property("_gallapagosMonster") != "bookbat") $skill[Gallapagosian Mating Call].try_use();
+			
+			if (monster_hp() > 310 && !$effect[On the Trail].have()) $skill[Transcendent Olfaction].try_use();
+			
 			while (monster_hp() > 310 && rnd < 3) {
 				$item[seal tooth].throw_item();
 				rnd++;
 			}
 			
 			if (navel.have_equipped() || (my_familiar() == stomp_boots || (my_familiar() == bander && $effect[Ode to Booze].have()))) {
-				if (navel.have_equipped() && (my_familiar() == stomp_boots || (my_familiar() == bander && $effect[Ode to Booze].have()))) {
-					abort("Check two simultaneous runaways methods.");
+				if (navel.equipped() && (my_familiar() == stomp_boots || (my_familiar() == bander && $effect[Ode to Booze].have()))) {
+					abort("We shouldn't have two simultaneous runaways methods.");
 				}
 				runaway();
 			} else {
-				if (get_property("_gallapagosMonster") != "bookbat") $skill[Gallapagosian Mating Call].try_use();
-				$skill[Give Your Opponent the Stinkeye].try_use();
 				$skill[Creepy Grin].try_use();
 				$skill[KGB tranquilizer dart].try_use();
+				$skill[Reflex Hammer].try_use();
 				$skill[Gulp Latte].try_use();
 				$skill[Throw Latte On Opponent].try_use();
+				$skill[Asdon Martin: Spring-Loaded Front Bumper].try_use();
+				if (get_property("_snokebombUsed").to_int() == 1) $skill[Snokebomb].try_use();
 			}
 		}
 		
 		if (mob == $monster[Eldritch Tentacle] && $item[haiku katana].have_equipped()) {
 			visit_url("fight.php?action=macro&macrotext=" + macro_stasis.url_encode(), true, true);
-			if($skill[Summer Siesta].have()) $skill[Summer Siesta].use();
+			$skill[Summer Siesta].try_use();
 			visit_url("fight.php?action=macro&macrotext=" + macro_finish.url_encode(), true, true);
 		}
 		
@@ -226,9 +232,13 @@ void main(int rnd, monster mob, string pg) {
 			visit_url("fight.php?action=macro&macrotext=" + macro_essentials.url_encode(), true, true);
 			abort("Encountered a Muertos Borrachos monster.");
 		}
-		
+			
+		if (mob == $monster[tumbleweed]) {
+			abort("We should never be fighting tumbleweeds.");
+		}
+
 		if (my_familiar() == $familiar[Machine Elf]) visit_url("fight.php?action=macro&macrotext=" + macro_essentials_finish.url_encode(), true, true);
-		
+
 		visit_url("fight.php?action=macro&macrotext=" + macro_finish.url_encode(), true, true);
 		
 		if (my_location() != $location[The Tunnel of L.O.V.E.]) multi_fight();

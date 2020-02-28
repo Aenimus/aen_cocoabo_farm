@@ -3,17 +3,16 @@ script "aen_resources.ash";
 // Utils
 import "aen_utils.ash";
 
-
-// Nest resources
-import "aen_comma.ash";
 import "aen_feast.ash";
 import "aen_legion.ash";
 import "aen_mumming.ash";
 import "aen_pygmy.ash";
 
+import "aen_cocoabo.ash";
+import "aen_comma.ash";
+
 // Resources
 import "aen_bastille.ash";
-import "aen_cocoabo.ash";
 import "aen_daily.ash";
 import "aen_data.ash";
 import "aen_evoke_eldritch.ash";
@@ -35,4 +34,5 @@ import "aen_snojo.ash";
 import "aen_timespinner.ash";
 import "aen_terminal.ash";
 import "aen_volcano.ash";
+import "aen_vote.ash";
 import "aen_witchess.ash";

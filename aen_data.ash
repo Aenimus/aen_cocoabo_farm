@@ -115,6 +115,6 @@ void data_fights_today_increment() {
 void data_tp_rares() {
 	foreach it in $items[tiny plastic Naughty Sorceress, tiny plastic Susie, tiny plastic Boris, tiny plastic Jarlsberg, tiny plastic Sneaky Pete,
 		tiny plastic Ed the Undying, tiny plastic Lord Spookyraven, tiny plastic Dr. Awkward, tiny plastic protector spectre] {
-		if (it.have()) print("Congratulations! You obtained " + it.item_amount() + " " + it.to_string() + "!", "green");
+		if (it.have()) print("Congratulations! You obtained " + plural(it, it.item_amount()) + "!", "green");
 	}
 }

@@ -26,7 +26,7 @@ boolean snojo_free_fight_run(boolean rest) {
 	print("Spending a free combat in the snojo.", "green");
 	adv1($location[The X-32-F Combat Training Snowman], -1, "");
 	if (rest && snojo_free_fights() > 9) visit_url("clan_viplounge.php?action=hottub"); //Because of the debuffs
-	return fights + 1 == snojo_free_fights();
+	return fights < snojo_free_fights();
 }
 
 boolean snojo_free_fight_run() {
