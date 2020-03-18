@@ -368,6 +368,15 @@ void cocoabo_farm_set(string bool) {
 	set_property("_aen_cocoabo_farm", bool);
 }
 
+boolean  cocoabo_stock() {
+	return get_property("_aen_cocoabo_stock").to_boolean();
+}
+
+void cocoabo_stock_set(string bool) {
+	print("Checkpoint reached: _aen_cocoabo_stock is " + bool + ".", "blue");
+	set_property("_aen_cocoabo_stock", bool);
+}
+
 boolean cocoabo_setup() {
 	return get_property("_aen_cocoabo_setup").to_boolean();
 }

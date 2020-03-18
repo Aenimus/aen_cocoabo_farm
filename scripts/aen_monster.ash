@@ -1,10 +1,19 @@
 script "aen_monster.ash";
 
+boolean has_attribute(string att, monster mob) {
+	att = att.to_upper_case();
+	foreach i, attribute in mob.attributes.split_string(" ") {
+		if (attribute == att) return true;
+	}
+	return false;
+}
+
 boolean is_free(monster mob) {
-  foreach i, attribute in mob.attributes.split_string(" ") {
-    if (attribute == "FREE") return true;
-  }
-  return false;
+	return has_attribute("FREE", mob);
+}
+
+boolean is_ur(monster mob) {
+	return has_attribute("ULTRARARE", mob);
 }
 
 int get_worth(monster mob) {

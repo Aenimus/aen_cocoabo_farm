@@ -36,6 +36,8 @@ import "aen_cocoabo_farm\scripts\aen_lynyrd.ash";
 import "aen_cocoabo_farm\scripts\aen_melf.ash";
 import "aen_cocoabo_farm\scripts\aen_mushgarden";
 import "aen_cocoabo_farm\scripts\aen_peeper.ash";
+import "aen_cocoabo_farm\scripts\aen_pocketprof.ash";
+import "aen_cocoabo_farm\scripts\aen_pickpocket.ash";
 import "aen_cocoabo_farm\scripts\aen_pyec.ash";
 import "aen_cocoabo_farm\scripts\aen_kramco.ash";
 import "aen_cocoabo_farm\scripts\aen_nep.ash";

@@ -3,11 +3,18 @@ script "aen_cocoabo_farm.ash";
 import "relay/AsdonMartinGUI.ash";
 import "aen_resources.ash";
 
-location pickpocket_location = great_trip;
 string chosen_libram = libram_today();
 
+if (!cocoabo_farm()) {
+	initial_prompt();
+	cocoabo_today_run();
+	freerun_fam_today_run();
+	great_trip.pickpocket_today_run();
+	cocoabo_farm_set("true");
+}
+
 // Stocking up on stuff here
-if (!get_property("_aen_cocoabo_stock").to_boolean()) {
+if (!cocoabo_stock()) {
 	print("Buying supplies.", "green");
 	if (!trav_trous.try_equip() && my_id() == 2273519) abort("Where are your damn trousers!?");
 	
@@ -35,28 +42,26 @@ if (!get_property("_aen_cocoabo_stock").to_boolean()) {
 	buy_until(8, $item[4-d camera], 10000);
 	buy_until(10, sgeea, 1000);
 	buy_until(1, $item[hot jelly], 3000);
+	buy_until(5, $item[powdered madness], 40000);
 	
 	if ($item[Spooky Surprise Egg].item_amount() < 40) {
 		int eggs = $item[Spooky Surprise Egg].item_amount();
 		cli_execute("acquire " + (40 - eggs) + " Spooky Surprise Egg");
 	}
 	
+	cli_execute("acquire Louder Than Bomb");
 	cli_execute("create 10 BRICKO ooze");
-	set_property("_aen_cocoabo_stock", "true");
-	print("Checkpoint reached: _aen_cocoabo_stock is true.", "blue");
+	cocoabo_stock_set("true");
 }
 
 // Set Up
 if (!cocoabo_setup()) {
-	initial_prompt();
-	cocoabo_farm_set("true");
 	print("Setting choice adventure values.", "purple");
 	set_choices();
 	set_auto_attack(0);
 	set_property("customCombatScript", "aen_combat");
-	
-	cocoabo_today_run();
-	freerun_fam_today_run();
+
+	pocketprof_prep();
 	libram_rare_run();
 	chosen_libram = libram_today(true);
 	
@@ -74,11 +79,6 @@ if (!cocoabo_setup()) {
 	cli_execute("breakfast");
 	
 	if (get_property("_saberForceUses").to_int() != 0) set_property("_aen_pygmy_abort", "true");
-	
-	if ($familiar[Pocket Professor].use()) {
-		if (!$item[Pocket Professor memory chip].try_equip()) abort("Acquire Pocket Professor memory chip.");
-		$familiar[Pocket Professor].feast_run();
-	}
 
 	daily_aftercore();
 
@@ -98,14 +98,14 @@ if (!cocoabo_setup()) {
 	volcano_tower(7);
 	copier_prep();
 	data_costs_today_set(my_session_meat());
-	if (pickpocket_location == great_trip && !cocoabo_free_runs() && !$effect[Half-Astral].have()) {
+	if (pickpocket_location_today_get() == great_trip && !cocoabo_free_runs() && !$effect[Half-Astral].have()) {
 		$item[astral mushroom].use();
 		$item[hot jelly].chew();
 	}
 
 	cocoabo_setup_set("true");
 }
-// abort("louder than bomb handling (or reflex + earlier asdon stuff?)");
+
 // Free Runs
 if (!cocoabo_free_runs()) {
 	if (freerun_fam_have() && !cocoabo_bander_runs()) {
@@ -129,12 +129,12 @@ if (!cocoabo_free_runs()) {
 			
 			if (stinkycheese_banish_can()) try_equip(acc1, $item[stinky cheese eye]);
 			else if ($item[stinky cheese eye].equipped() && !stinkycheese_banish_can()) try_equip(acc1, pickpocket_outfit_acc1);
-			adv1(pickpocket_location, 0, "");
+			adv1(pickpocket_location_today(), 0, "");
 			if (pantsgiving_threshold_run(2)) pickpocket_outfit_pants.try_equip();
 			continue;
 		}
 		cocoabo_bander_runs_set("true");
-	}
+	} else if (!freerun_fam_have()) cocoabo_bander_runs_set("true");
 
 	// Banishes w/ sniff
 	boolean all_runs = false;
@@ -156,7 +156,7 @@ if (!cocoabo_free_runs()) {
 		}
 		if (get_property("shrubGifts") == "meat" && !$effect[Everything Looks Red].have() && $familiar[Crimbo Shrub].have()) $familiar[Crimbo Shrub].use();
 		else if (!$familiar[Artistic Goth Kid].use()) $familiar[none].use();
-		adv1(pickpocket_location, -1, "");
+		adv1(pickpocket_location_today(), 0, "");
 		continue;
 	}
 		

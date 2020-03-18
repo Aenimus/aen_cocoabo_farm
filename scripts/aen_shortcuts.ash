@@ -15,9 +15,10 @@ item vote_sticker = $item[&quot;I Voted!&quot; sticker];
 effect attunement = $effect[Eldritch Attunement];
 
 // Familiars
+familiar bander = $familiar[Frumious Bandersnatch];
 familiar comma = $familiar[Comma Chameleon];
 familiar hand = $familiar[Disembodied Hand];
-familiar bander = $familiar[Frumious Bandersnatch];
+familiar pocket_prof = $familiar[Pocket Professor];
 familiar stomp_boots = $familiar[Pair of Stomping Boots];
 
 // Items

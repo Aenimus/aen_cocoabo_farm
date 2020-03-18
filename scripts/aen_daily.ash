@@ -5,6 +5,10 @@ void daily_aftercore() {
 		if (!get_property("_aprilShower").to_boolean()) cli_execute("shower ice");
 		if (!get_property("_olympicSwimmingPool").to_boolean()) visit_url("clan_viplounge.php?whichfloor=2&preaction=goswimming&subaction=laps&pwd=" + my_hash());
 		while (get_property("_poolGames").to_int() < 3) visit_url("clan_viplounge.php?whichfloor=2&preaction=poolgame&stance=1&pwd=" + my_hash());
+	int roll = random(2);
+	if (roll == 1) roll = 2;
+	int choice = 1 + roll;
+	if (!get_property("_clanFortuneBuffUsed").to_boolean()) visit_url("choice.php?whichchoice=1278&which=-" + choice + "&q1=pizza&q2=batman&q3=thick&option=1&pwd=" + my_hash());
 	}
 	if (kgb.fetch()) {
 		while (get_property("_kgbClicksUsed").to_int() < 22) cli_execute("briefcase b meat");

@@ -21,7 +21,7 @@ boolean cocoabo_today_prep(familiar fam) {
 	if (fam.use()) {
 		mumming_run("meat");
 		if (fam == comma) return true;
-		feast_run(fam);
+		fam.feast_run();
 		helicopter.legion_equip();
 		return true;
 	}
@@ -38,8 +38,8 @@ void cocoabo_today_run() {
 		Cocoabo
 	] {
 		if (fam.have()) {
-			cocoabo_today_set(fam);
-			cocoabo_today_prep(fam);
+			fam.cocoabo_today_set();
+			fam.cocoabo_today_prep();
 			return;
 		}
 	}

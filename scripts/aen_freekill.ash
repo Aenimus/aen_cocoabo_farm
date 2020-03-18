@@ -1,7 +1,15 @@
 script "aen_freekill.ash";
 
-int freekill_batrang() {
+int freekill_batrang_uses() {
 	return get_property("_usedReplicaBatoomerang").to_int();
+}
+
+boolean freekill_batrang_used() {
+	return freekill_batrang_uses() > 2;
+}
+
+boolean freekill_batrang_can() {
+	return !freekill_batrang_used() && $item[replica bat-oomerang].have();
 }
 
 int freekill_docbag_uses() {
@@ -17,7 +25,7 @@ boolean freekill_docbag_can() {
 }
 
 boolean freekill_docbag_run() {
-	print("Wearing the " + docbag.to_string() + " for Chest X-Ray #" + freekill_docbag_uses() + 1 + ".", "purple");
+	print("Wearing the " + docbag.to_string() + " for Chest X-Ray #" + (freekill_docbag_uses() + 1) + ".", "purple");
 	return try_equip(acc1, docbag);
 }
 
@@ -38,6 +46,18 @@ boolean freekill_jokester_run() {
 	return $item[The Jokester\'s gun].try_equip();
 }
 
+int freekill_madness_uses() {
+	return get_property("_powderedMadnessUses").to_int();
+}
+
+boolean freekill_madness_used() {
+	return freekill_madness_uses() > 4;
+}
+
+boolean freekill_madness_can() {
+	return !freekill_madness_used() && $item[powdered madness].have();
+}
+
 int freekill_powerpill_uses() {
 	return get_property("_powerPillUses").to_int();
 }
@@ -50,6 +70,14 @@ boolean freekill_powerpill_can() {
 	return !freekill_powerpill_used() && $item[power pill].have();
 }
 
-int freekill_shattering() {
-	return get_property("").to_int();
+int freekill_shattering_uses() {
+	return get_property("_shatteringPunchUsed").to_int();
+}
+
+boolean freekill_shattering_used() {
+	return freekill_shattering_uses() > 2;
+}
+
+boolean freekill_shattering_can() {
+	return !freekill_shattering_used() && $skill[shattering punch].have();
 }
