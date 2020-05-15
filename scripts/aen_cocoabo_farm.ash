@@ -17,9 +17,7 @@ if (!cocoabo_farm()) {
 if (!cocoabo_stock()) {
 	print("Buying supplies.", "green");
 	if (!trav_trous.try_equip() && my_id() == 2273519) abort("Where are your damn trousers!?");
-	
-	closet_until(-1, bworps);
-	
+
 	// Copiers
 	if (!$item[unfinished ice sculpture].avail()) {
 		buy_until(3, $item[snow berries], 3334);
@@ -35,8 +33,9 @@ if (!cocoabo_stock()) {
 	buy_until(20, $item[BRICKO brick], 500);
 	buy_until(3, $item[lynyrd snare], 1000);
 	buy_until(40, $item[drum machine], 4000);
-	buy_until(30, $item[gingerbread cigarette], 15000);
-	buy_until(23, $item[bowl of scorpions], 500);
+	buy_until(20, $item[Power Pill], 20000);
+	// buy_until(30, $item[gingerbread cigarette], 17500);
+	if (!juggle_scorpions(23)) buy_until(23 - bworps.amt(), bworps, 500);
 	buy_until(1, $item[burning newspaper], 15000);
 	buy_until(1, $item[alpine watercolor set], 5000);
 	buy_until(8, $item[4-d camera], 10000);
@@ -166,7 +165,6 @@ if (!cocoabo_free_runs()) {
 		if (workshed_query(mayo_clinic)) $item[Mayodiol].use(); // For later when we eat again
 		if (workshed_run(asdon)) asdonFuelUpTo(150);
 	} else if (workshed_query(asdon)) asdonFuelUpTo(150);
-	
 	if ($effect[Half-Astral].have()) cli_execute("uneffect Half-Astral");
 	cocoabo_free_runs_set("true");
 }
@@ -307,7 +305,7 @@ while (cocoabo_farm()) {
 		glitch_reward_fight_run();
 		continue;
 	}
-	
+
 	// Giant sandworms
 	if (sandworm_can()) {
 		cocoabo_run();
@@ -344,18 +342,18 @@ while (cocoabo_farm()) {
 		continue;
 	}
 	
-	// Gingerbread Upscale Retail District
+	/* // Gingerbread Upscale Retail District
 	if (gingerbread_free_turn_can()) {
 		cocoabo_run();
 		gingerbread_free_turn_run();
 		continue;
-	}
+	} */
 	
 	// Mushroom Garden
 	if (mushgarden_fight_can()) {
 		cocoabo_run();
 		mushgarden_fight_run();
-		mushgarden_pick(5);
+		mushgarden_pick(11);
 		continue;
 	}
 	

@@ -45,7 +45,7 @@ boolean equipped(item it) {
 }
 
 int amt(item it) {
-	return item_amount(it);
+	return it.item_amount();
 }
 
 void smart_equip(item it) {

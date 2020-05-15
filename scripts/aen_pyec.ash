@@ -31,7 +31,7 @@ boolean pyec_run() {
 	if (!pyec_can()) return false;
 	if (!pyec.have()) abort("Acquire your PYEC.");
 	print("Maximising MP and using a PYEC.", "purple");
-	$familiar[Disembodied Hand].use();
+	if (!$familiar[Left-Hand Man].use()) $familiar[Disembodied Hand].use();
 	maximize("MP", false);
 	cli_execute("/cast * " + libram_today());
 	print("Second cast check in pyec_run().", "red");

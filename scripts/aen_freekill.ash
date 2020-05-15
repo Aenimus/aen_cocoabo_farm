@@ -20,13 +20,17 @@ boolean freekill_docbag_used() {
 	return freekill_docbag_uses() > 2;
 }
 
-boolean freekill_docbag_can() {
+boolean freekill_docbag_could() {
 	return !freekill_docbag_used() && docbag.fetch();
 }
 
-boolean freekill_docbag_run() {
+boolean freekill_docbag_prep() {
 	print("Wearing the " + docbag.to_string() + " for Chest X-Ray #" + (freekill_docbag_uses() + 1) + ".", "purple");
 	return try_equip(acc1, docbag);
+}
+
+boolean freekill_docbag_can() {
+	return docbag.equipped() && !freekill_docbag_used(); 
 }
 
 int freekill_glark() {
@@ -37,13 +41,33 @@ boolean freekill_jokester_used() {
 	return get_property("_firedJokestersGun").to_boolean();
 }
 
-boolean freekill_jokester_can() {
+boolean freekill_jokester_could() {
 	return !freekill_jokester_used() && $item[The Jokester\'s gun].fetch();
 }
 
-boolean freekill_jokester_run() {
+boolean freekill_jokester_prep() {
 	print("Wearing the The Jokester\'s gun for a free kill.", "purple");
 	return $item[The Jokester\'s gun].try_equip();
+}
+
+boolean freekill_jokester_can() {
+	return $item[The Jokester\'s gun].equipped() && !freekill_jokester_used();
+}
+
+boolean freekill_gingerbread_used() {
+	return get_property("_gingerbreadMobHitUsed").to_boolean();
+}
+
+boolean freekill_gingerbread_can() {
+	return !freekill_gingerbread_used() && $skill[Gingerbread Mob Hit].have();
+}
+
+boolean freekill_missile_used() {
+	return get_property("_missileLauncherUsed").to_boolean();
+}
+
+boolean freekill_missile_can() {
+	return !freekill_missile_used() && $skill[Asdon Martin: Missile Launcher].have();
 }
 
 int freekill_madness_uses() {
@@ -67,7 +91,10 @@ boolean freekill_powerpill_used() {
 }
 
 boolean freekill_powerpill_can() {
-	return !freekill_powerpill_used() && $item[power pill].have();
+	boolean used = freekill_powerpill_used();
+	boolean have = $item[power pill].have();
+	if (!used && !have) abort("Acquire more Power pills.");
+	return !used && have;
 }
 
 int freekill_shattering_uses() {
@@ -79,5 +106,5 @@ boolean freekill_shattering_used() {
 }
 
 boolean freekill_shattering_can() {
-	return !freekill_shattering_used() && $skill[shattering punch].have();
+	return !freekill_shattering_used() && $skill[Shattering Punch].have();
 }

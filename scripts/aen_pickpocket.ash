@@ -75,6 +75,7 @@ void pickpocket_today_prep() {
 		foreach index, rec in mob.item_drops_array() {
 			item it = rec.drop;
 			check = it.mall_price();
+			if (it == $item[blue-frosted astral cupcake]) check = check + 10000;
 			if (check > worth) worth = check;
 			if (worth > best) {
 				best = worth;
@@ -93,6 +94,7 @@ void pickpocket_today_prep() {
 		if (index == target) pickpocket_target_today_set(rec.mob);
 		else pickpocket_banishes_today_set(rec.mob);
 	}
+	if ($effect[On the Trail].have() && get_property("olfactedMonster") != pickpocket_target_today_get()) cli_execute("uneffect On the Trail");
 	print("Today\'s pickpocket item is the " + pickpocket_item_today_get() + " from the " + pickpocket_target_today_get() + "!", "green");
 }
 
