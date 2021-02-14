@@ -1,4 +1,4 @@
-script "aen_cocoabo";
+script "aen_cocoabo.ash";
 
 string cocoabo_today_get() {
 	return get_property("_aen_cocoabo_today");
@@ -48,7 +48,11 @@ void cocoabo_today_run() {
 
 void cocoabo_run() {
 	cocoabo_today().use();
-	if (!cocoabo_exception()) helicopter.legion_equip();
+	if ( !cocoabo_exception() )
+	{
+		if ( $item[miniature crystal ball].worn() && get_property( "crystalBallMonster" ) == "drunk pygmy" ) return;
+		helicopter.legion_equip();
+	}
 	else comma_run("Feather Boa Constrictor");
 }
 	

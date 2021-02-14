@@ -50,22 +50,62 @@ boolean terminal_digitize_should() {
 	return false;
 }
 
-void terminal_use_digitize() {
+int terminal_portscans() {
+	return get_property("_sourceTerminalPortscanUses").to_int();
+}
+
+boolean terminal_portscan_can() {
+	if (terminal_have()) return terminal_portscans() < 3;
+	return false;
+}
+
+void terminal_portscan_prepare(boolean macro_check) {
+	if (!terminal_portscan_can()) return;
+	if (macro_check && (get_property("_macrometeoriteUses").to_int() > 9 || !$skill[Macrometeorite].have())) {
+		if (get_property("_powerfulGloveBatteryPowerUsed").to_int() > 90 || !$item[Powerful Glove].fetch()) abort("ABORT: No macrometeorite-like options to use.");
+	}
+	print("Preparing to portscan a monster.", "green");
+	cli_execute("terminal educate portscan");
+	cli_execute("terminal educate extract");
+	set_property("aen_use_portscan", true);
+	/*if () set_property("aen_use_portscan", true);
+	else print("Could not prepare portscan.", "red");*/
+}
+
+void terminal_portscan_prepare() {
+	terminal_portscan_prepare(true);
+}
+
+void terminal_portscan_use(boolean macro_check) {
+	if (!get_property("aen_use_portscan").to_boolean() || !$skill[portscan].have()) return;
+	if (macro_check && (get_property("_macrometeoriteUses").to_int() > 9 || !$skill[Macrometeorite].have()) // @TODO meteorite file
+	&& !$skill[CHEAT CODE: Replace Enemy].have()) {
+		abort("ABORT: No Macrometeorite-like options to use.");
+	}
+	$skill[portscan].use();
+	set_property("aen_use_portscan", false);
+}
+
+void terminal_portscan_use() {
+	terminal_portscan_use(true);
+}
+
+boolean terminal_duplicate_can() {
+	if (terminal_have()) return get_property("_sourceTerminalDuplicateUses").to_int() < 1;
+	return false;
+}
+
+void terminal_digitize_use() {
 	terminal_digitize.use_skill();
 	set_property("_assJustDigitized", true);
 }
 
-boolean terminal_duplicate_can() {
-	if (!terminal_have()) return false;
-	return get_property("_sourceTerminalDuplicateUses").to_int() < 1;
-}
 
-boolean terminal_duplicate_prepare() {
-	if (!terminal_duplicate_can()) return false;
+void terminal_duplicate_prepare() {
+	if (!terminal_duplicate_can()) return;
 	print("Preparing to duplicate a monster.", "green");
 	if (!get_property("_eternalCarBatteryUsed").to_boolean() && $item[Eternal Car Battery].fetch()) $item[Eternal Car Battery].use();
 	cli_execute("terminal educate duplicate");
 	cli_execute("terminal educate extract");
-	return get_property("_sourceTerminalDuplicateUses").to_int() > 0;
 }
 	

@@ -30,7 +30,7 @@ boolean freekill_docbag_prep() {
 }
 
 boolean freekill_docbag_can() {
-	return docbag.equipped() && !freekill_docbag_used(); 
+	return docbag.worn() && !freekill_docbag_used(); 
 }
 
 int freekill_glark() {
@@ -51,7 +51,7 @@ boolean freekill_jokester_prep() {
 }
 
 boolean freekill_jokester_can() {
-	return $item[The Jokester\'s gun].equipped() && !freekill_jokester_used();
+	return $item[The Jokester\'s gun].worn() && !freekill_jokester_used();
 }
 
 boolean freekill_gingerbread_used() {

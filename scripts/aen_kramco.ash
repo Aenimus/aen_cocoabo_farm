@@ -1,7 +1,7 @@
 script "aen_kramco.ash";
 
 boolean kramco_have() {
-	return kramco.avail();
+	return kramco.available();
 }
 
 int kramco_made() {

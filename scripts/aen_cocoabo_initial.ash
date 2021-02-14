@@ -1,4 +1,4 @@
-script "aen_initial.ash";
+script "aen_cocoabo_initial.ash";
 
 import "aen_utils.ash";
 
@@ -21,12 +21,6 @@ void main(string alternative_outfit, // Name of the outfit to use without your c
 	if (rollover_clan != "") set_property("aen_rollover_clan", rollover_clan);
 	if (copy_monster != "") set_property("aen_copy_monster", copy_monster);
 	if (camera_monster != "") set_property("aen_camera_monster", camera_monster);
-	
-	if (!svn_exists("Ezandora-Asdon-Martin-GUI-branches-Release")) {
-		if (user_confirm("Download Ezandora's required Asdon GUI script?")) {
-			cli_execute("svn checkout https://github.com/Ezandora/Asdon-Martin-GUI/branches/Release/");
-		} else abort("Ezandora's Asdon GUI script is necessary for this script.");
-	} else print("You already have Ezandora's Asdon GUI script installed.", "green");
 	
 	foreach kit in $strings[max_weight_outfit,
 		pickpocket_outfit

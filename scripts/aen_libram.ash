@@ -82,6 +82,7 @@ boolean libram_rare_run() {
 		if (!ig_lib.rare_diminish) return true;
 		skill source = ig_lib.source;
 		int summons = ig_lib.get_summons();
+		if (ig_lib.max_rares <= summons) return true;
 		while (summons + 1 > ig_lib.get_summons()) {
 			source.use(); //@TODO Check for MP
 		}

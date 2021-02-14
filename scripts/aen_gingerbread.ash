@@ -34,7 +34,8 @@ boolean gingerbread_can() {
 }
 
 boolean gingerbread_free_turn_can() {
-	if (!get_property("gingerSewersUnlocked").to_boolean()) abort("Open the Gingercity sewers to banish pigeons and rats, first.");
+	if (!get_property("_aen_gingerbread_today").to_boolean()) return false;
+	if (!get_property("gingerSewersUnlocked").to_boolean()) abort("Open the Gingercity sewers to banish pigeons and rats first.");
 	if (!$item[gingerbread cigarette].have()) abort("Acquire more gingerbread cigarettes.");
 	return (gingerbread_can());
 }

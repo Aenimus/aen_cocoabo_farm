@@ -14,7 +14,7 @@ void daily_aftercore() {
 		}
 	}
 	if (kgb.fetch()) {
-		while (get_property("_kgbClicksUsed").to_int() < 22) cli_execute("briefcase b meat");
+		while (get_property("_kgbClicksUsed").to_int() < 22) cli_execute("briefcase b items");
 	}
 		
 	if (get_property("getawayCampsiteUnlocked").to_boolean()) {
@@ -24,6 +24,7 @@ void daily_aftercore() {
 	visit_url("choice.php");
 	if (!get_property("_allYearSucker").to_boolean()) $item[all-year sucker].try_use();
 	if (get_property("timesRested").to_int() < 1 && total_free_rests() > 0) visit_url("campground.php?action=rest");
+	if (!get_property("_daycareSpa").to_boolean()) cli_execute("daycare mysticality");
 	if (!get_property("oscusSodaUsed").to_boolean()) $item[Oscus\'s neverending soda].try_use();
 	if (!get_property("_perfectlyFairCoinUsed").to_boolean()) $item[perfectly fair coin].try_use();
 	if (!get_property("_incredibleSelfEsteemCast").to_boolean()) $skill[Incredible Self-Esteem].try_use();

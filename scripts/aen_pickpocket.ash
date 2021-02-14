@@ -75,7 +75,7 @@ void pickpocket_today_prep() {
 		foreach index, rec in mob.item_drops_array() {
 			item it = rec.drop;
 			check = it.mall_price();
-			if (it == $item[blue-frosted astral cupcake]) check = check + 10000;
+			//if (it == $item[blue-frosted astral cupcake]) check = check + 10000;
 			if (check > worth) worth = check;
 			if (worth > best) {
 				best = worth;

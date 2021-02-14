@@ -28,7 +28,7 @@ boolean saber_upgrade_run() {
 }
 
 boolean saber_pygmy_can() {
-	return !get_property("_aen_pygmy_abort").to_boolean();
+	return get_property("_aen_can_force_pygmy").to_boolean();
 }
 
 boolean saber_force_pygmy_should(int banishes, int forces) {
@@ -55,6 +55,7 @@ boolean saber_pygmy_run() {
 	else juggle_scorpions(2);
 	comma_fights_increment();
 	print("We are fighting the forced drunk pygmies.", "purple");
+	if (!bworps.have() & !bworps.fetch()) buy_until(1, bworps, 500);
 	adv1($location[The Hidden Bowling Alley], -1, "");
 	return banishes < pygmy_free_banishes();
 }

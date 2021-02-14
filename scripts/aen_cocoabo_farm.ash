@@ -1,12 +1,9 @@
 script "aen_cocoabo_farm.ash";
 
-import "relay/AsdonMartinGUI.ash";
 import "aen_resources.ash";
 
-string chosen_libram = libram_today();
-
 if (!cocoabo_farm()) {
-	initial_prompt();
+	initial_cocoabo_prompt();
 	cocoabo_today_run();
 	freerun_fam_today_run();
 	great_trip.pickpocket_today_run();
@@ -15,11 +12,11 @@ if (!cocoabo_farm()) {
 
 // Stocking up on stuff here
 if (!cocoabo_stock()) {
-	print("Buying supplies.", "green");
+	print("Buying supplies.", "purple");
 	if (!trav_trous.try_equip() && my_id() == 2273519) abort("Where are your damn trousers!?");
 
 	// Copiers
-	if (!$item[unfinished ice sculpture].avail()) {
+	if (!$item[unfinished ice sculpture].available()) {
 		buy_until(3, $item[snow berries], 3334);
 		buy_until(3, $item[ice harvest], 3334);
 		cli_execute("create unfinished ice sculpture");
@@ -32,15 +29,15 @@ if (!cocoabo_stock()) {
 	buy_until(10, $item[BRICKO eye brick], 3000);
 	buy_until(20, $item[BRICKO brick], 500);
 	buy_until(3, $item[lynyrd snare], 1000);
-	buy_until(40, $item[drum machine], 4000);
+	buy_until(40, $item[drum machine], 6000);
 	buy_until(20, $item[Power Pill], 20000);
-	// buy_until(30, $item[gingerbread cigarette], 17500);
+	buy_until(30, $item[gingerbread cigarette], 25000);
+	if ($item[gingerbread cigarette].amt() > 29) set_property("_aen_gingerbread_today", "true");
 	if (!juggle_scorpions(23)) buy_until(23 - bworps.amt(), bworps, 500);
-	buy_until(1, $item[burning newspaper], 15000);
+	//buy_until(1, $item[burning newspaper], 15000);
 	buy_until(1, $item[alpine watercolor set], 5000);
-	buy_until(8, $item[4-d camera], 10000);
+	retrieve_item($item[4-d camera]);
 	buy_until(10, sgeea, 1000);
-	buy_until(1, $item[hot jelly], 3000);
 	buy_until(5, $item[powdered madness], 40000);
 	
 	if ($item[Spooky Surprise Egg].item_amount() < 40) {
@@ -57,18 +54,17 @@ if (!cocoabo_stock()) {
 if (!cocoabo_setup()) {
 	print("Setting choice adventure values.", "purple");
 	set_choices();
-	set_auto_attack(0);
+	set_auto_attack("Pick Pocket");
 	set_property("customCombatScript", "aen_combat");
 
 	pocketprof_prep();
-	libram_rare_run();
-	chosen_libram = libram_today(true);
+	summon_libram();
 	
 	if (vote_can()) vote_run();
 	
 	if (horsery_have()) horsery_run("dark");
 
-	if (!saber_upgrade_run()) abort("Something went wrong when upgrading the saber.");
+	if ( !CosplaySaber.upgrade() ) abort( "Something went wrong when upgrading the saber." );
 	
 	optimal_eat(); //Eats to (fullness -1).
 	
@@ -77,29 +73,40 @@ if (!cocoabo_setup()) {
 	cli_execute("/whitelist " + day_clan());
 	cli_execute("breakfast");
 	
-	if (get_property("_saberForceUses").to_int() != 0) set_property("_aen_pygmy_abort", "true");
+	CosplaySaber.set_previous_forces_today();
 
 	daily_aftercore();
 
 	pyec_run();
 			
-	cli_execute("/cast * " + chosen_libram);
-	cli_execute("/cast * " + chosen_libram); // counteract cast limit of 200
+	summon_libram();
 	
 	if (get_property("getawayCampsiteUnlocked").to_boolean()) {
 		while (get_property("timesRested").to_int() < total_free_rests()) visit_url("place.php?whichplace=campaway&action=campaway_tentclick");
 	}
 
-	if (!$item[burning paper crane].fetch()) cli_execute("create burning paper crane");
+	//if (!$item[burning paper crane].fetch()) cli_execute("create burning paper crane");
 	if (bastille_can()) bastille_run($stat[Mysticality], $item[Brutal brogues], $effect[Bastille Braggadocio]);
 
 	// Volcoino
 	volcano_tower(7);
 	copier_prep();
 	data_costs_today_set(my_session_meat());
+	
+	// Stray catcher
+	print("Spending a free turn in the NEP to check for stray time pranks or spiders.", "purple");
+	summon_libram();
+	inebriety_check();
+	cocoabo_outfit().change_outfit();
+	if ($item[buddy bjorn].have_equipped() && my_bjorned_familiar() != $familiar[misshapen animal skeleton]) $familiar[misshapen animal skeleton].bjornify_familiar();
+	if (nep_free_turn_can()) {
+		cocoabo_run();
+		nep_free_turn_run();
+		nep_free_turn_run(); // Needs to be twice to counteract the intro superlikely.
+	}
+
 	if (pickpocket_location_today_get() == great_trip && !cocoabo_free_runs() && !$effect[Half-Astral].have()) {
 		$item[astral mushroom].use();
-		$item[hot jelly].chew();
 	}
 
 	cocoabo_setup_set("true");
@@ -116,7 +123,7 @@ if (!cocoabo_free_runs()) {
 		hookah.try_equip();
 		
 		// Free run loop
-		cli_execute("/cast * " + chosen_libram);
+		summon_libram();
 		while (!freerun_max_weight_run()) {
 			hookah_uneffect();
 			inebriety_check();
@@ -127,7 +134,7 @@ if (!cocoabo_free_runs()) {
 			closet_stuff();
 			
 			if (stinkycheese_banish_can()) try_equip(acc1, $item[stinky cheese eye]);
-			else if ($item[stinky cheese eye].equipped() && !stinkycheese_banish_can()) try_equip(acc1, pickpocket_outfit_acc1);
+			else if ($item[stinky cheese eye].worn() && !stinkycheese_banish_can()) try_equip(acc1, pickpocket_outfit_acc1);
 			adv1(pickpocket_location_today(), 0, "");
 			if (pantsgiving_threshold_run(2)) pickpocket_outfit_pants.try_equip();
 			continue;
@@ -140,7 +147,7 @@ if (!cocoabo_free_runs()) {
 	while (!all_runs) {
 		data_session_adv_update();
 		data_adv_threshold_check();
-		cli_execute("/cast * " + chosen_libram);
+		summon_libram();
 		if (get_property("_latteBanishUsed").to_boolean() && get_property("_latteRefillsUsed").to_int() < 3) cli_execute("latte refill cajun pumpkin rawhide");
 		pickpocket_outfit().change_outfit();
 		if (!get_property("_vmaskBanisherUsed").to_boolean()) try_equip(acc1, $item[V for Vivala mask]);
@@ -154,8 +161,16 @@ if (!cocoabo_free_runs()) {
 			continue;
 		}
 		if (get_property("shrubGifts") == "meat" && !$effect[Everything Looks Red].have() && $familiar[Crimbo Shrub].have()) $familiar[Crimbo Shrub].use();
+		//else if (get_property("_spaceJellyfishDrops") < 6 && $familiar[Space Jellyfish].have()) $familiar[Space Jellyfish].use();
 		else if (!$familiar[Artistic Goth Kid].use()) $familiar[none].use();
+		// if (my_familiar() == $familiar[Space Jellyfish]) {
+		// 	if ($effect[Half-Astral].have()) cli_execute("uneffect Half-Astral");
+		// 	equip($slot[familiar], $item[none]);
+		// 	adv1($location[The Hole in the Sky], 0, "");
+		// } else {
+		// 	if (my_familiar() != $familiar[Crimbo Shrub]) abort("Jellies exhausted and now goth kid?");
 		adv1(pickpocket_location_today(), 0, "");
+		// }
 		continue;
 	}
 		
@@ -163,8 +178,8 @@ if (!cocoabo_free_runs()) {
 	
 	if (workshed_can(asdon)) {
 		if (workshed_query(mayo_clinic)) $item[Mayodiol].use(); // For later when we eat again
-		if (workshed_run(asdon)) asdonFuelUpTo(150);
-	} else if (workshed_query(asdon)) asdonFuelUpTo(150);
+		if (workshed_run(asdon)) fill_asdon_martin_to(150);
+	} else if (workshed_query(asdon)) fill_asdon_martin_to(150);
 	if ($effect[Half-Astral].have()) cli_execute("uneffect Half-Astral");
 	cocoabo_free_runs_set("true");
 }
@@ -173,7 +188,7 @@ if (!cocoabo_free_runs()) {
 while (cocoabo_farm()) {
 
 	print("Initiating start of loop.", "purple");
-	cli_execute("/cast * " + chosen_libram);
+	summon_libram();
 	inebriety_check();
 	cocoabo_outfit().change_outfit();
 	if ($item[buddy bjorn].have_equipped() && my_bjorned_familiar() != $familiar[misshapen animal skeleton]) $familiar[misshapen animal skeleton].bjornify_familiar();
@@ -181,12 +196,24 @@ while (cocoabo_farm()) {
 	// Adventure tracking and protection; meat tracking
 	data_session_adv_update();
 	data_session_meat_update();
-	if (embezzlers_today() > 0) data_adv_threshold_check(5);
+	if (embezzlers_today() > 0) data_adv_threshold_check(6);
 	else data_adv_threshold_check();
 
-	if (!$effect[Inscrutable Gaze].have() && (embezzlers_today() < 1 || embezzlers_today() > 4)) $skill[Inscrutable Gaze].use();
+	if (!$effect[Inscrutable Gaze].have() && (embezzlers_today() < 1 || embezzlers_today() > 5)) $skill[Inscrutable Gaze].use();
 	hookah_uneffect();
 	closet_stuff();
+
+	// Portscan into macro
+	if (counter_now("portscan.edu")) {
+		cocoabo_run();
+		if (get_property("_macrometeoriteUses").to_int() > 9 || !$skill[Macrometeorite].have()) {
+			print("We cannot use Macrometeorite, so we'll use CHEAT CODE: Replace Enemy.");
+			$item[Powerful Glove].equip(); // Only gets here if we have one
+		}
+		if (terminal_portscan_can()) terminal_portscan_prepare();
+		mushgarden_fight_run();
+		continue;
+	}
 
 	// Vote monster
 	if (vote_free_fight_can()) {
@@ -194,7 +221,7 @@ while (cocoabo_farm()) {
 		wanderer_now_run();
 		continue;
 	}
-	
+
 	// LOVE Tunnel
 	if (lov_can()) {
 		cocoabo_run();
@@ -208,7 +235,7 @@ while (cocoabo_farm()) {
 		proto_run();
 		continue;
 	}
-	
+	//abort("moto");
 	if (copier_run()) {
 		cocoabo_run();
 		continue;
@@ -271,10 +298,19 @@ while (cocoabo_farm()) {
 		tentacle_skill_fight_run();
 		continue;
 	}
+
+		// Mushroom Garden
+	if (mushgarden_fight_can()) {
+		cocoabo_run();
+		mushgarden_fight_run();
+		mushgarden_pick(11);
+		continue;
+	}
 	
 	// BRICKO oozes
 	if (bricko_fight_can()) {
 		cocoabo_run();
+		if (terminal_portscan_can()) terminal_portscan_prepare();
 		bricko_fight_run();
 		continue;
 	}
@@ -283,13 +319,6 @@ while (cocoabo_farm()) {
 	if (snojo_free_fight_can()) {
 		cocoabo_run();
 		snojo_free_fight_run(true); // Boolean is for resting after the 10th fight
-		continue;
-	}
-
-	// Neverending Party
-	if (nep_free_turn_can()) {
-		cocoabo_run();
-		nep_free_turn_run();
 		continue;
 	}
 
@@ -312,27 +341,31 @@ while (cocoabo_farm()) {
 		sandworm_run();
 		continue;
 	}
+	
+	// Neverending Party
+	if ($effect[Meteor Showered].have() && nep_free_turn_can()) { // Showered from pygmy sabers
+		cocoabo_run();
+		nep_free_turn_run();
+		continue;
+	}
 
 	// Drunk pygmies
-	if (get_property("_snokebombUsed").to_int() == 2) { // @TODO Check banish text?
+    if ( DrunkPygmy.can_free_fight() )
+    {
+        if ( !DrunkPygmy.location_prepared() ) DrunkPygmy.prepare_location();
+        else DrunkPygmy.run_free_fight();
+        continue;
+    }
+    else if ( DrunkPygmy.can_forced_friends_free_fight() )
+    {
+        DrunkPygmy.run_forced_friends_free_fight();
+        continue;
+    }
+
+	// Neverending Party
+	if (nep_free_turn_can()) {
 		cocoabo_run();
-		pygmy_free_banish_prep();
-		continue;
-	}
-	
-	if (pygmy_free_banish_can(10)) {
-		cocoabo_run();
-		pygmy_free_banish_run();
-		continue;
-	}
-	
-	if (pygmy_free_banishes() < 21 && saber.try_equip()) { // People with Saber get 21 banishes
-		cocoabo_run();
-		saber_pygmy_run();
-		continue;
-	} else 	if (pygmy_free_banish_can(11)) { // People without get 11
-		cocoabo_run();
-		pygmy_free_banish_run();
+		nep_free_turn_run();
 		continue;
 	}
 	
@@ -342,18 +375,10 @@ while (cocoabo_farm()) {
 		continue;
 	}
 	
-	/* // Gingerbread Upscale Retail District
+	// Gingerbread Upscale Retail District
 	if (gingerbread_free_turn_can()) {
 		cocoabo_run();
 		gingerbread_free_turn_run();
-		continue;
-	} */
-	
-	// Mushroom Garden
-	if (mushgarden_fight_can()) {
-		cocoabo_run();
-		mushgarden_fight_run();
-		mushgarden_pick(11);
 		continue;
 	}
 	
@@ -361,14 +386,15 @@ while (cocoabo_farm()) {
 	if (peeper_can(true)) {
 		cocoabo_run();
 		peeper_embezzler_run();
+		timespinner_pranks_check();
 		continue;
 	}
-
-	timespinner_pranks_check();
 	
+	timespinner_pranks_check();
+
 	kramco_grind_until(20);
 	
-	if ($item[Beach Comb].avail() && get_property("_freeBeachWalksUsed") < 11) abort("Use your free beach walks.");
+	if ($item[Beach Comb].available() && get_property("_freeBeachWalksUsed") < 11) abort("Use your free beach walks.");
 	
 	workshed_run(mayo_clinic);
 
@@ -381,7 +407,7 @@ while (cocoabo_farm()) {
 		if (it.have()) autosell(it.item_amount(), it);
 	}
 	
-	foreach it in $items[solid gold jewel, ancient vinyl coin purse, duct tape wallet, old coin purse, old leather wallet, pixel coin, shiny stones, Gathered Meat-Clip] {
+	foreach it in $items[ancient vinyl coin purse, duct tape wallet, old coin purse, old leather wallet, pixel coin, shiny stones, Gathered Meat-Clip] {
 		if (it.have()) it.use_all();
 	}
 	

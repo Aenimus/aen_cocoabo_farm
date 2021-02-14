@@ -22,7 +22,7 @@ boolean bricko_fight_run(item it) {
 	string str = it.to_string();
 	monster mob = str.to_monster();
 	int fights = bricko_fights();
-	print("Preparing to fight a " + str + "for free fight #" + (fights + 1) + ".", "purple");
+	print("Preparing to fight a " + str + " for free fight #" + (fights + 1) + ".", "purple");
 	it.use();
 	return bricko_fights() > fights;
 }
@@ -31,7 +31,7 @@ boolean bricko_fight_run(monster mob) {
 	string str = mob.to_string();
 	item it = str.to_item();
 	int fights = bricko_fights();
-	print("Preparing to fight a " + str + "for free fight #" + (fights + 1) + ".", "purple");
+	print("Preparing to fight a " + str + " for free fight #" + (fights + 1) + ".", "purple");
 	it.use();
 	return bricko_fights() > fights;
 }

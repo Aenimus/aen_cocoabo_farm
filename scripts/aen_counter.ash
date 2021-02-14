@@ -6,7 +6,7 @@ boolean counter_have(string counter_name) {
 }
 
 boolean counter_now(string counter_name) {
-	counter_name = counter_name + " Monster";
+	counter_name = (counter_name ==  "portscan.edu")? counter_name : counter_name + " Monster";
 	return get_counters(counter_name, 0, 0) == counter_name;
 }
 

@@ -10,6 +10,7 @@ record item_group {
 	int surplus;
 	boolean rare_diminish;
 	string summons;
+	int max_rares;
 	float rate;
 	item [int] rares;
 	item product;
@@ -79,8 +80,9 @@ item_group ig_libram_brick() {
 	ig_libram_brick.rare_diminish = true;
 	ig_libram_brick.summons = "ig_libram_brick_summons";
 	int summons = get_property("_brickoEyeSummons").to_int();
+	ig_libram_brick.max_rares = 3;
 	if (summons < 3) {
-		ig_libram_brick.rate = 0.5 ** (summons +1);
+		ig_libram_brick.rate = 0.5 ** (summons + 1);
 		ig_libram_brick.rares[0] = $item[BRICKO eye brick];
 	}
 	return ig_libram_brick;
@@ -114,7 +116,7 @@ item_group ig_libram_favor() {
 	ig_libram_favor.rare_diminish = true;
 	ig_libram_favor.summons = "ig_libram_favor_summons";
 	int summons = get_property("_favorRareSummons").to_int();
-	ig_libram_favor.rate = 0.5 ** (summons +1);
+	ig_libram_favor.rate = 0.5 ** (summons + 1);
 	
 	// Handling for 4 poppers this day
 	ig_libram_favor.rares[0] = $item[divine champagne popper];
@@ -189,8 +191,8 @@ item_group ig_libram_taffy() {
 	ig_libram_taffy.summons = "ig_libram_taffy_summons";
 	int summons = get_property("_taffyRareSummons").to_int();
 	int yellow = get_property("_taffyYellowSummons").to_int();
+	ig_libram_taffy.max_rares = 4;
 	ig_libram_taffy.rate = 0.5 ** (summons +1);
-	
 	if (summons - yellow < 3) {
 		ig_libram_taffy.rares[0] = $item[pulled green taffy];
 		ig_libram_taffy.rares[1] = $item[pulled indigo taffy];

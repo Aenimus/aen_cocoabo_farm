@@ -18,6 +18,6 @@ boolean melf_free_fight_run() {
 	hookah.try_equip();
 	print("Preparing to fight Machine Elf free fight #" + (fights + 1) + ".", "purple");
 	adv1($location[The Deep Machine Tunnels], -1, "");
-	if (melf_fights() > 4 && hookah.equipped()) equip(fam, $item[None]);
+	if (melf_fights() > 4 && hookah.worn()) equip(fam, $item[None]);
 	return melf_fights() > fights;
 }

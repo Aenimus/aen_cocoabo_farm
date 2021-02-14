@@ -119,7 +119,7 @@ boolean vote_fight_last_check() {
 }
 
 boolean vote_sticker() {
-	if (!try_equip(acc1, vote_sticker)) abort("You should have your I voted sticker.");
+	if (!try_equip(acc3, vote_sticker)) abort("You should have your I voted sticker.");
 	return true;
 }
 

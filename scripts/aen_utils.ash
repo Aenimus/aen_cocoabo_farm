@@ -36,11 +36,17 @@ boolean have(effect eff) {
 	return eff.have_effect() > 0;
 }
 
-boolean avail(item it) {
-	return it.available_amount() > 0;
+boolean available( item it )
+{
+	if (it.available_amount() > 0 ) return true;
+    foreach fold in it.get_related( "fold" )
+    {
+        if (it.available_amount() > 0 ) return true;
+    }
+    return false;
 }
 
-boolean equipped(item it) {
+boolean worn(item it) {
 	return it.have_equipped();
 }
 
@@ -56,7 +62,7 @@ void smart_equip(item it) {
 	// For now we'll try to juggle acc3 all the time
 	equip($slot[acc3], it);
 
-	if (!it.equipped()) abort("Could not equip " + it.to_string() + " for some reason");
+	if (!it.worn()) abort("Could not equip " + it.to_string() + " for some reason");
 }
 
 buffer funksling(item [int] funks, item it) {
@@ -86,7 +92,7 @@ boolean buy_until(int amt, item it) {
 }
 
 slot equipped_slot(item it) {
-	if (!it.equipped()) return $slot[none];
+	if (!it.worn()) return $slot[none];
 	if (it.to_slot() == acc1) {
 		foreach sl in $slots[acc1, acc2, acc3] {
 			if (equipped_item(sl) == it) return sl;
@@ -118,38 +124,32 @@ boolean juggle_scorpions() {
 	return closet_until(get_property("_drunkPygmyBanishes").to_int(), $item[bowl of scorpions]);
 }
 
-boolean fetch(item it, boolean store) {
-	cli_execute("try; fold " + it.to_string());
-	if (it.have()) return true;
-	if (store && it.shop_amount() > 0) return take_shop(1, it);
-	if (it.closet_amount() > 0) return take_closet(1, it);
-	if (it.display_amount() > 0) return take_display(1, it);
-	if (it.storage_amount() > 0) return take_storage(1, it);
-	if (it.equipped()) {
-		slot it_slot = it.equipped_slot();
-		return equip(it_slot, $item[none]);
+boolean fetch(item it, boolean store)
+{
+	if ( count( it.get_related( "fold" ) ) > 1 )
+	{
+		cli_execute( "try; fold " + it.to_string() );
 	}
-	print("Could not fetch: " + it.to_string() + ".", "red");
+	if ( it.have() ) return true;
+	if ( it.closet_amount() > 0) return take_closet( 1, it );
+	if ( it.display_amount() > 0) return take_display( 1, it );
+	if ( it.storage_amount() > 0) return take_storage (1, it );
+	if ( store && it.shop_amount() > 0 ) return take_shop( 1, it );
+	if ( it.worn() ) {
+		slot it_slot = it.equipped_slot();
+		return equip( it_slot, $item[none] );
+	}
+	print( "Unable to fetch \"" + it.to_string() + "\".", "red" );
 	return false;
 }
 
-boolean fetch(item it) {
-	cli_execute("try; fold " + it.to_string());
-	if (it.have()) return true;
-	if (it.shop_amount() > 0) return take_shop(1, it);
-	if (it.closet_amount() > 0) return take_closet(1, it);
-	if (it.display_amount() > 0) return take_display(1, it);
-	if (it.storage_amount() > 0) return take_storage(1, it);
-	if (it.equipped()) {
-		slot it_slot = it.equipped_slot();
-		return equip(it_slot, $item[none]);
-	}
-	print("Could not fetch: " + it.to_string() + ".", "red");
-	return false;
+boolean fetch( item it )
+{
+	return it.fetch( true );
 }
 
 boolean try_equip(slot sl, item it) {
-	if (it.equipped()) {
+	if (it.worn()) {
 		slot where = it.equipped_slot();
 		if(where == sl) return true;
 		equip(sl, $item[None]);
@@ -169,7 +169,7 @@ boolean try_equip(slot sl, item it) {
 }
 
 boolean try_equip(item it) {
-	if (it.equipped()) return true;
+	if (it.worn()) return true;
 	cli_execute("try; fold " + it.to_string());
 	if (!it.have()) {
 		if (it.shop_amount() > 0) take_shop(1, it);
@@ -358,6 +358,34 @@ void inebriety_check() {
 	if (my_inebriety() > inebriety_limit()) abort("You are overdrunk.");
 }
 
+// Barf farming
+boolean barf_farm() {
+	return get_property("_aen_barf_farm").to_boolean();
+}
+
+void barf_farm_set(string bool) {
+	print("Checkpoint reached: _aen_barf_farm is " + bool + ".", "blue");
+	set_property("_aen_barf_farm", bool);
+}
+
+boolean  barf_stock() {
+	return get_property("_aen_barf_stock").to_boolean();
+}
+
+void barf_stock_set(string bool) {
+	print("Checkpoint reached: _aen_barf_stock is " + bool + ".", "blue");
+	set_property("_aen_barf_stock", bool);
+}
+
+boolean barf_setup() {
+	return get_property("_aen_barf_setup").to_boolean();
+}
+
+void barf_setup_set(string bool) {
+	print("Checkpoint reached: _aen_barf_setup is " + bool + ".", "blue");
+	set_property("_aen_barf_setup", bool);
+}
+
 // Cocoabo farming
 boolean cocoabo_farm() {
 	return get_property("_aen_cocoabo_farm").to_boolean();
@@ -452,7 +480,7 @@ void optimal_consumption() {
 		}
 		if (my_fullness() == 17 && liver_remaining() > 0) abort("Something went wrong with Mayodiol.");
 	}
-	if(pantsgiving.avail() && get_property("_pantsgivingFullness").to_int() <= 1) {
+	if(pantsgiving.available() && get_property("_pantsgivingFullness").to_int() <= 1) {
 		while (stomach_remaining() > 0) {
 			if (get_property("_universeCalculated").to_int() < get_property("skillLevel144").to_int()
 				&& reverse_numberology(0,0) contains 14) {
@@ -486,9 +514,9 @@ void optimal_stooper() {
 }
 
 void drone() {
-	if ($item[Crown of Thrones].equipped() && my_enthroned_familiar() != $familiar[Warbear Drone]) {
+	if ($item[Crown of Thrones].worn() && my_enthroned_familiar() != $familiar[Warbear Drone]) {
 		$familiar[Warbear Drone].enthrone_familiar();
-	} else if ($item[Buddy Bjorn].equipped() && my_bjorned_familiar() != $familiar[Warbear Drone]) {
+	} else if ($item[Buddy Bjorn].worn() && my_bjorned_familiar() != $familiar[Warbear Drone]) {
 		$familiar[Warbear Drone].bjornify_familiar();
 	}
 }
@@ -502,6 +530,7 @@ void set_choices() {
 	set_choice[205] = 2; // Van, Damn
 	set_choice[291] = 1; // A Tight Squeeze
 	set_choice[294] = 1; // Maybe It's a Sexy Snake!
+	set_choice[505] = 2; // Aboreal Respite; map then skip
 	set_choice[781] = 6; // Earthbound and Down
 	set_choice[888] = 4; // Take a Look, it's in a Book! (Rise)
 	set_choice[889] = 5; // Take a Look, it's in a Book! (Fall)
@@ -600,7 +629,15 @@ int adventure_worth() {
 	return get_property("aen_adventure_worth").to_int();
 }
 
-void initial_prompt() {
+/*void initial_barf_prompt() {
+	foreach str in $strings[
+		// @TODO
+	] {
+		if (get_property("aen_" + str) == "") abort("Read and then run aen_barf_initial.ash to set your outfits and other variables, first.");
+	}
+}*/
+
+void initial_cocoabo_prompt() {
 	foreach str in $strings[
 		embezzler_outfit,
 		cocoabo_outfit,
@@ -612,7 +649,7 @@ void initial_prompt() {
 		copy_monster,
 		camera_monster,
 	] {
-		if (get_property("aen_" + str) == "") abort("Read and then run aen_initial.ash to set your outfits and other variables, first.");
+		if (get_property("aen_" + str) == "") abort("Read and then run aen_cocoabo_initial.ash to set your outfits and other variables, first.");
 	}
 }
 
@@ -680,4 +717,16 @@ monster copy_monster() {
 	string check = get_property("aen_copy_monster");
 	if (check == "") abort("Read and run aen_inital.ash first.");
 	return check.to_monster();
+}
+
+string get_string(string prop) {
+	return get_property(prop);
+}
+
+int get_int(string prop) {
+	return get_property(prop).to_int();
+}
+
+boolean get_boolean(string prop) {
+	return get_property(prop).to_boolean();
 }

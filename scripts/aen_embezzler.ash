@@ -10,6 +10,8 @@ void embezzlers_today_increment() {
 
 boolean embezzler_prep() {
 	if (embezzler_outfit() == "") abort("Set a value for aen_embezzler_outfit.");
+	cli_execute("terminal educate digitize");
+	cli_execute("terminal educate extract");
 	$skill[Disco Leer].try_use();
 	return embezzler_outfit().change_outfit();
 }

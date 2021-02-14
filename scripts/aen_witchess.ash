@@ -48,6 +48,6 @@ boolean witchess_fight_run(int piece) {
 }
 
 boolean witchess_fight_run() {
-	return witchess_fight_run(1936);
+	return witchess_fight_run(1942); // Bishop
 }
 	

@@ -3,11 +3,16 @@ script "aen_wanderer.ash";
 location wanderer_location(copier wanderer) {
 	copier taffy = c_taffy();
 	if (wanderer.mob == taffy.target && taffy.combat_could && (fishy_have() || fishy_pipe_run())) return $location[The Briny Deeps];
-	return $location[The Haunted Kitchen];
+	location guz_loc = get_property("guzzlrQuestLocation").to_location();
+	if (guz_loc == $location[None]) abort("You need to accept a new Guzzlr quest.");
+	return guz_loc;
+	//return $location[The Haunted Kitchen];
 }
 
 location wanderer_location() { //@TODO
-	return $location[The Haunted Kitchen];
+	location guz_loc = get_property("guzzlrQuestLocation").to_location();
+	if (guz_loc == $location[None]) abort("You need to accept a new Guzzlr quest.");
+	return guz_loc;
 }
 
 boolean wanderer_now_run(copier wanderer) {

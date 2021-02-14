@@ -4,7 +4,7 @@ location proto_location() {
 	return get_property("ghostLocation").to_location();
 }
 
-boolean proto_avail() {
+boolean proto_available() {
 	return get_property("nextParanormalActivity").to_int() == total_turns_played();
 }
 

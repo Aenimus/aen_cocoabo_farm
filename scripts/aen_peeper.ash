@@ -13,7 +13,7 @@ boolean peeper_free_can() {
 }
 
 boolean peeper_can(boolean cocoabo) {
-	if (cocoabo && get_property("_aen_adv_today").to_int() > 4) return false;
+	if (cocoabo && get_property("_aen_adv_today").to_int() > 5) return false;
 	return peeper_have() && (peeper_free_can() || spleen_remaining() > 2);
 }
 

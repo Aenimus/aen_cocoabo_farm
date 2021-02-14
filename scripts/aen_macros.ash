@@ -88,60 +88,72 @@ string macro_stasis(int rnd, int hp_threshold, boolean meteor) {
 	return macro_begin + macro_stasis;
 }
 
-string macro_stasis_scaler(int rnd) {
+string macro_stasis(int rnd, int hp_threshold) {
+	return macro_stasis(rnd, hp_threshold, false);
+}
+
+string macro_stasis_scaler(int rnd, int hp_threshold, boolean meteor) {
+	string macro_begin;
+	if (meteor) {
+		macro_begin =
+			"if (!pastround " + rnd + ");" +
+				"if hasskill 7291;" + // Meteor Shower
+					"skill 7291;" +
+				"endif;" +
+			"endif;";
+	} else macro_begin = "pickpocket;";
 	string macro_stasis_scaler =
-		"pickpocket;" +
-		"if !pastround " + rnd + ";" +
+		"if (!pastround " + rnd + ");" + // No HP check to initiate scaler HP
 			"if hasskill 7297;" + // Sing Along
 				"skill 7297;" +
 			"endif;" +
 		"endif;" +
-		"if !pastround " + rnd + ";" +
+		"if (!pastround " + rnd + " && monsterhpabove " + hp_threshold + ");" +
 			"if hasskill 7273;" + // Extract
 				"skill 7273;" +
 			"endif;" +
 		"endif;" +
-		"if !pastround " + rnd + ";" +
+		"if (!pastround " + rnd + " && monsterhpabove " + hp_threshold + ");" +
 			"if hasskill 7170;" + // Pocket Crumbs
 				"skill 7170;" +
 			"endif;" +
 		"endif;" +
-		"if !pastround " + rnd + ";" +
+		"if (!pastround " + rnd + " && monsterhpabove " + hp_threshold + ");" +
 			"if hasskill 4034;" + // Curse of Weaksauce
 				"skill 4034;" +
 			"endif;" +
 		"endif;" +
-		"if !pastround " + rnd + ";" +
+		"if (!pastround " + rnd + " && monsterhpabove " + hp_threshold + ");" +
 			"if hasskill 7289;" + // Micrometeorite
 				"skill 7289;" +
 			"endif;" +
 		"endif;" +
-		"if !pastround " + rnd + ";" +
+		"if (!pastround " + rnd + " && monsterhpabove " + hp_threshold + ");" +
 			"if hasskill 7247;" + // Summon Love Gnats
 				"skill 7247;" +
 			"endif;" +
 		"endif;" +
-		"if !pastround " + rnd + ";" +
+		"if (!pastround " + rnd + " && monsterhpabove " + hp_threshold + ");" +
 			"if hasskill 3004;" + // Entangling Noodles
 				"skill 3004;" +
 			"endif;" +
 		"endif;" +
-		"if !pastround " + rnd + ";" +
+		"if (!pastround " + rnd + " && monsterhpabove " + hp_threshold + ");" +
 			"if hascombatitem little red book;" +
 				"use little red book;" +
 			"endif;" +
 		"endif;" +
-		"if !pastround " + rnd + ";" +
+		"if (!pastround " + rnd + " && monsterhpabove " + hp_threshold + ");" +
 			"if hascombatitem Time-Spinner;" +
 				"use Time-Spinner;" +
 			"endif;" +
 		"endif;" +
-		"if !pastround " + rnd + ";" +
+		"if (!pastround " + rnd + " && monsterhpabove " + hp_threshold + ");" +
 			"if hascombatitem Rain-Doh blue balls;" +
 				"use Rain-Doh blue balls;" +
 			"endif;" +
 		"endif;" +
-		"while !pastround " + rnd + ";" +
+		"while (!pastround " + rnd + " && monsterhpabove " + hp_threshold + ");" +
 			"if !hascombatitem seal tooth;" +
 				"abort;" +
 			"endif;" +
@@ -149,20 +161,108 @@ string macro_stasis_scaler(int rnd) {
 				"use seal tooth;" +
 			"endif;" +
 		"endwhile;";
-	return macro_stasis_scaler;
+	return macro_begin + macro_stasis_scaler;
 }
 
-string macro_stasis(int rnd, int hp_threshold) {
-	return macro_stasis(rnd, hp_threshold, false);
+string macro_stasis_scaler(int rnd, int hp_threshold) {
+	return macro_stasis_scaler(rnd, hp_threshold, false);
+}
+
+string macro_hpless_stasis(int rnd, boolean meteor) {
+	string macro_begin;
+	if (meteor) {
+		macro_begin =
+			"if (!pastround " + rnd + ");" +
+				"if hasskill 7291;" + // Meteor Shower
+					"skill 7291;" +
+				"endif;" +
+			"endif;";
+	} else macro_begin = "pickpocket;";
+	string macro_hpless_stasis =
+		"if (!pastround " + rnd + ");" + // No HP check to initiate scaler HP
+			"if hasskill 7297;" + // Sing Along
+				"skill 7297;" +
+			"endif;" +
+		"endif;" +
+		"if (!pastround " + rnd + ");" +
+			"if hasskill 7273;" + // Extract
+				"skill 7273;" +
+			"endif;" +
+		"endif;" +
+		"if (!pastround " + rnd + ");" +
+			"if hasskill 7170;" + // Pocket Crumbs
+				"skill 7170;" +
+			"endif;" +
+		"endif;" +
+		"if (!pastround " + rnd + ");" +
+			"if hasskill 4034;" + // Curse of Weaksauce
+				"skill 4034;" +
+			"endif;" +
+		"endif;" +
+		"if (!pastround " + rnd + ");" +
+			"if hasskill 7289;" + // Micrometeorite
+				"skill 7289;" +
+			"endif;" +
+		"endif;" +
+		"if (!pastround " + rnd + ");" +
+			"if hasskill 7247;" + // Summon Love Gnats
+				"skill 7247;" +
+			"endif;" +
+		"endif;" +
+		"if (!pastround " + rnd + ");" +
+			"if hasskill 3004;" + // Entangling Noodles
+				"skill 3004;" +
+			"endif;" +
+		"endif;" +
+		"if (!pastround " + rnd + ");" +
+			"if hascombatitem little red book;" +
+				"use little red book;" +
+			"endif;" +
+		"endif;" +
+		"if (!pastround " + rnd + ");" +
+			"if hascombatitem Time-Spinner;" +
+				"use Time-Spinner;" +
+			"endif;" +
+		"endif;" +
+		"if (!pastround " + rnd + ");" +
+			"if hascombatitem Rain-Doh blue balls;" +
+				"use Rain-Doh blue balls;" +
+			"endif;" +
+		"endif;" +
+		"while (!pastround " + rnd + ");" +
+			"if !hascombatitem seal tooth;" +
+				"abort;" +
+			"endif;" +
+			"if hascombatitem seal tooth;" +
+				"use seal tooth;" +
+			"endif;" +
+		"endwhile;";
+	print(macro_hpless_stasis);
+	return macro_begin + macro_hpless_stasis;
+}
+
+string macro_hpless_stasis(int rnd) {
+	return macro_hpless_stasis(rnd, false);
 }
 
 string macro_finish() {
 	string macro_finish =
+		"while !pastround 25;" +
+			"skill candyblast;" +
+		"endwhile;" +
 		"while !pastround 29;" +
 			"attack;" +
 		"endwhile;" +
 		"abort;";
 	return macro_finish;
+}
+
+string macro_hpless_stasis_finish(int rnd, boolean meteor) {
+	return macro_hpless_stasis(rnd, meteor) + macro_finish();
+}
+
+string macro_hpless_stasis_finish(int rnd) {
+	return macro_hpless_stasis_finish(rnd, false);
 }
 
 string macro_stasis_finish(int rnd, int hp_threshold, boolean meteor) {
@@ -173,20 +273,24 @@ string macro_stasis_finish(int rnd, int hp_threshold) {
 	return macro_stasis_finish(rnd, hp_threshold, false);
 }
 
-string macro_stasis_scaler_finish(int rnd) {
-	return macro_stasis_scaler(rnd) + macro_finish();
+string macro_stasis_scaler_finish(int rnd, int hp_threshold) {
+	return macro_stasis_scaler(rnd, hp_threshold) + macro_finish();
 }
 
 string macro_gingerbread_stasis(int rnd, int hp_threshold, boolean meteor) {
 	string macro_gingerbread_stasis =
-		macro_stasis(rnd, hp_threshold, meteor) +
+		macro_stasis_scaler(rnd, hp_threshold, meteor) +
 		"use gingerbread cigarette;" +
 		"abort;";
 	return macro_gingerbread_stasis;
 }
 
+string macro_gingerbread_stasis(int rnd, int hp_threshold) {
+	return macro_gingerbread_stasis(rnd, hp_threshold, false);
+}
+
 string macro_zeppelin_stasis(int rnd, int hp_threshold, boolean meteor) {
-	if (my_location() == $location[The Red Zeppelin]) hp_threshold = hp_threshold + 50;
+	if (my_location() == $location[The Red Zeppelin]) hp_threshold = hp_threshold + 51;
 	string macro_zeppelin_stasis =
 	macro_stasis(rnd, hp_threshold, meteor) +
 	"use glark cable;" +

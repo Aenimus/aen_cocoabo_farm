@@ -1,4 +1,4 @@
-script "aen_mushgarden";
+script "aen_mushgarden.ash";
 
 boolean mushgarden_have() {
 	return get_campground() contains $item[packet of mushroom spores];

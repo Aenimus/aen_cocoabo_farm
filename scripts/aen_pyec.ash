@@ -33,8 +33,6 @@ boolean pyec_run() {
 	print("Maximising MP and using a PYEC.", "purple");
 	if (!$familiar[Left-Hand Man].use()) $familiar[Disembodied Hand].use();
 	maximize("MP", false);
-	cli_execute("/cast * " + libram_today());
-	print("Second cast check in pyec_run().", "red");
-	cli_execute("/cast * " + libram_today());
+	summon_libram();
 	return pyec.use();
 }

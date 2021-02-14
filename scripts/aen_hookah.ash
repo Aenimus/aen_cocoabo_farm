@@ -6,6 +6,7 @@ void hookah_uneffect() {
 		foreach eff in $effects[
 			Apoplectic with Rage,
 			Barfpits,
+			Berry Thorny,
 			Biologically Shocked,
 			Bone Homie,
 			Boner Battalion,

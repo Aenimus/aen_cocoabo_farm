@@ -27,13 +27,13 @@ boolean freerun_fam_could() { //@TODO MAX WEIGHT WITH FEAST
 	return (my_familiar() == stomp_boots || (my_familiar() == bander && $effect[Ode to Booze].have()));
 }
 
-int freerun_fam_avail() {
+int freerun_fam_available() {
 	int total_weight = freerun_fam_today().total_weight();
 	return floor(total_weight/5);
 }
 
 int freerun_fam_remain() {
-	return freerun_fam_avail() - freerun_fam_used();
+	return freerun_fam_available() - freerun_fam_used();
 }
 
 boolean freerun_fam_have() {
@@ -53,13 +53,13 @@ void freerun_fam_max_set(int num) {
 }
 
 void freerun_fam_max_reset() {
-	set_property("aen_freerun_fam_max", freerun_fam_avail());
+	set_property("aen_freerun_fam_max", freerun_fam_available());
 }
 
 void freerun_fam_max_check() {
 	if (freerun_fam_max() < 1) {
 		max_weight_outfit().change_outfit();
-		set_property("aen_freerun_fam_max", freerun_fam_avail());
+		set_property("aen_freerun_fam_max", freerun_fam_available());
 	}
 }
 
@@ -76,17 +76,17 @@ void freerun_fam_today_run() {
 
 boolean freerun_max_weight_run() {
 	freerun_fam_today().use();
-	while (freerun_fam_used() >= freerun_fam_avail()) {
-		if (!max_weight_outfit_acc1.equipped() && try_equip(acc1, max_weight_outfit_acc1)) continue;
-		if (!max_weight_outfit_acc2.equipped() && try_equip(acc2, max_weight_outfit_acc2)) continue;
-		if (!max_weight_outfit_acc3.equipped() && try_equip(acc3, max_weight_outfit_acc3)) continue;
-		if (!max_weight_outfit_pants.equipped() && try_equip(pants, max_weight_outfit_pants)) continue;
-		if (!max_weight_outfit_weapon.equipped() && try_equip(weapon, max_weight_outfit_weapon)) continue;
-		if (!max_weight_outfit_off.equipped() && try_equip(off, max_weight_outfit_off)) continue;
-		if (!max_weight_outfit_shirt.equipped() && try_equip(shirt, max_weight_outfit_shirt)) continue;
-		if (!max_weight_outfit_back.equipped() && try_equip(back, max_weight_outfit_back)) continue;
-		if (!max_weight_outfit_hat.equipped() && try_equip(hat, max_weight_outfit_hat)) continue;
-		if (!max_weight_outfit_fam_equip.equipped() && try_equip(fam, max_weight_outfit_fam_equip)) continue;
+	while (freerun_fam_used() >= freerun_fam_available()) {
+		if (!max_weight_outfit_acc1.worn() && try_equip(acc1, max_weight_outfit_acc1)) continue;
+		if (!max_weight_outfit_acc2.worn() && try_equip(acc2, max_weight_outfit_acc2)) continue;
+		if (!max_weight_outfit_acc3.worn() && try_equip(acc3, max_weight_outfit_acc3)) continue;
+		if (!max_weight_outfit_pants.worn() && try_equip(pants, max_weight_outfit_pants)) continue;
+		if (!max_weight_outfit_weapon.worn() && try_equip(weapon, max_weight_outfit_weapon)) continue;
+		if (!max_weight_outfit_off.worn() && try_equip(off, max_weight_outfit_off)) continue;
+		if (!max_weight_outfit_shirt.worn() && try_equip(shirt, max_weight_outfit_shirt)) continue;
+		if (!max_weight_outfit_back.worn() && try_equip(back, max_weight_outfit_back)) continue;
+		if (!max_weight_outfit_hat.worn() && try_equip(hat, max_weight_outfit_hat)) continue;
+		if (!max_weight_outfit_fam_equip.worn() && try_equip(fam, max_weight_outfit_fam_equip)) continue;
 		break;
 	}
 	if (freerun_fam_used() < freerun_fam_max()) return false;
